@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.lianliantao.yuetuan.custom_view.CircleImageView
+            android:id="@+id/iv_circle"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="15dp"
+            android:src="@mipmap/green_choose" />
+
+        <TextView
+            android:id="@+id/tv_nick_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_horizontal"
+            android:text="李晨奇"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:padding="15dp">
+
+            <ImageView
+                android:id="@+id/ivTwo"
+                style="@style/setIv"
+                android:src="@drawable/sz_zuo_iconfengxiangxiazai" />
+
+            <TextView
+                style="@style/setTv"
+                android:layout_toRightOf="@+id/ivTwo"
+                android:text="分享商品带APP下载" />
+
+            <Switch
+                android:id="@+id/switch_one"
+                style="@style/setSwitch" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.3dp"
+            android:background="@color/gray" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="15dp">
+
+            <ImageView
+                android:id="@+id/ivOne"
+                style="@style/setIv"
+                android:src="@drawable/sz_zuo_icontongzhi" />
+
+            <TextView
+                style="@style/setTv"
+                android:layout_toRightOf="@+id/ivOne"
+                android:text="订单收益通知" />
+
+            <Switch
+                android:id="@+id/switch_two"
+                style="@style/setSwitch" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.3dp"
+            android:background="@color/gray" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginRight="15dp">
+
+            <ImageView
+                android:id="@+id/iv_three"
+                style="@style/setIv"
+                android:src="@drawable/sz_zuo_iconyinsishezhi" />
+
+            <TextView
+                style="@style/setTv"
+                android:layout_toRightOf="@+id/iv_three"
+                android:text="订单隐私设置" />
+
+            <Switch
+                android:id="@+id/switch_three"
+                style="@style/setSwitch" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="42dp"
+            android:layout_marginTop="5dp"
+            android:text="开启后将隐藏对外订单用户信息"
+            android:textColor="@color/txblack"
+            android:textSize="12sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.3dp"
+            android:layout_marginTop="15dp"
+            android:background="@color/gray" />
+
+        <RelativeLayout
+            android:id="@+id/reTaobaoQudao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="15dp">
+
+            <ImageView
+                android:id="@+id/ivfour"
+                style="@style/setIv"
+                android:src="@drawable/sz_zuo_iconqudaorenzheng" />
+
+            <TextView
+                style="@style/setTv"
+                android:layout_toRightOf="@+id/ivfour"
+                android:text="淘宝渠道认证" />
+
+            <TextView
+                android:id="@+id/tvTaoBaoApproveLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:layout_toLeftOf="@+id/ivRenzheng"
+                android:textColor="@color/colorPrimary"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/ivRenzheng"
+                style="@style/setToRight" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.3dp"
+            android:background="@color/gray"
+            android:visibility="gone" />
+
+        <RelativeLayout
+            android:id="@+id/reCancelTaoBaoAuth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="15dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="27dp"
+                android:text="取消淘宝授权"
+                android:textColor="@color/black" />
+
+            <ImageView style="@style/setToRight" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.3dp"
+            android:background="@color/gray" />
+
+        <RelativeLayout
+            android:id="@+id/reWChat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="15dp">
+
+            <ImageView
+                android:id="@+id/ivfive"
+                style="@style/setIv"
+                android:src="@drawable/sz_zuo_iconweixin" />
+
+            <TextView
+                android:id="@+id/wxh"
+                style="@style/setTv"
+                android:layout_toRightOf="@+id/ivfive"
+                android:text="微信号" />
+
+            <TextView
+                android:id="@+id/tvWChatNum"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="10dp"
+                android:layout_toLeftOf="@+id/ivWChat"
+                android:layout_toRightOf="@+id/wxh"
+                android:ellipsize="end"
+                android:gravity="right"
+                android:maxLines="1"
+                android:textColor="@color/colorPrimary"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/ivWChat"
+                style="@style/setToRight" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.3dp"
+            android:background="@color/gray" />
+
+        <RelativeLayout
+            android:id="@+id/reCellPhoneBind"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="15dp">
+
+            <ImageView
+                android:id="@+id/ivSix"
+                style="@style/setIv"
+                android:src="@drawable/sz_zuo_iconbangding" />
+
+            <TextView
+                style="@style/setTv"
+                android:layout_toRightOf="@+id/ivSix"
+                android:text="手机绑定" />
+
+            <TextView
+                android:id="@+id/tvMobile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:layout_toLeftOf="@+id/ivCell"
+                android:textColor="@color/txblack"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/ivCell"
+                style="@style/setToRight" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.3dp"
+            android:background="@color/gray" />
+
+        <RelativeLayout
+            android:id="@+id/reVersion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="15dp">
+
+            <ImageView
+                android:id="@+id/ivSeven"
+                style="@style/setIv"
+                android:src="@drawable/sz_zuo_iconbanbenhao" />
+
+            <TextView
+                style="@style/setTv"
+                android:layout_toRightOf="@+id/ivSeven"
+                android:text="版本号" />
+
+            <TextView
+                android:id="@+id/version"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:layout_toLeftOf="@+id/ivVersion"
+                android:textColor="@color/txblack"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/ivVersion"
+                style="@style/setToRight" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.3dp"
+            android:background="@color/gray" />
+
+        <RelativeLayout
+            android:id="@+id/reClennCache"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="15dp">
+
+            <ImageView
+                android:id="@+id/ivEight"
+                style="@style/setIv"
+                android:src="@drawable/sz_zuo_iconhuancun" />
+
+            <TextView
+                style="@style/setTv"
+                android:layout_toRightOf="@+id/ivEight"
+                android:text="清除缓存" />
+
+            <TextView
+                android:id="@+id/tvCache"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="15dp"
+                android:layout_toLeftOf="@+id/cleanCacha"
+                android:textColor="@color/txblack"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/cleanCacha"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/cleancache"
+                android:gravity="center"
+                android:paddingLeft="15dp"
+                android:paddingTop="3dp"
+                android:paddingRight="15dp"
+                android:paddingBottom="3dp"
+                android:text="清除"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.3dp"
+            android:background="@color/gray" />
+
+        <TextView
+            android:id="@+id/tv_login_out"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="30dp"
+            android:background="@drawable/phone_login_bg"
+            android:gravity="center"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:text="退 出 登 录"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

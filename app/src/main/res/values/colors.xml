@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#fa6025</color>
+    <color name="colorPrimaryDark">#fa6025</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="view_line_gray">#cccccc</color>
+    <color name="white">#ffffff</color>
+    <color name="transparent">#00000000</color>
+    <color name="black">#000000</color>
+    <color name="txgray">#939393</color>
+    <color name="gray">#70CCCCCC</color>
+    <color name="home_head_color">#FA6205</color>
+    <color name="txblack">#585858</color>
+    <color name="estimate_start">#F76A7C</color>
+    <color name="estimate_end">#FB223E</color>
+    <color name="upgrade_start">#6A97F7</color>
+    <color name="upgrade_end">#306CED</color>
+    <color name="money_color">#FF4600</color>
+    <color name="old_mney">#999999</color>
+    <color name="head_sale_color">#666666</color>
+    <color name="yellow">#c6881b</color>
+</resources>

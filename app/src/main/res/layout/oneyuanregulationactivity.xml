@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/viewHeight"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:background="@color/black" />
+
+    <include layout="@layout/base_title_layout" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="15dp"
+        android:background="@color/gray" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:text="一元购活动规则"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:lineSpacingExtra="5dp"
+        android:text="1. 麻花优选用户均可参与;\n2. 一元购商品通过先购买后补贴的形式实现（如一元购商品券后价格是1.9元，您下单付1.9元，平台补贴0.9元，实际到手成本1元）;\n3. 补贴时间：付款后次月25号返现到高佣账户（可提现）;\n4. 同一商品用户一天内最多享受补贴一次，多拍无补贴。"
+        android:textColor="@color/txblack"
+        android:textSize="14sp" />
+
+</LinearLayout>

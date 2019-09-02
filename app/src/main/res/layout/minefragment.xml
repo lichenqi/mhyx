@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/viewHeight"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:background="@drawable/mine_head_bg" />
+
+    <com.scwang.smartrefresh.layout.SmartRefreshLayout
+        android:id="@+id/swiperefreshlayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/gray">
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:focusableInTouchMode="true"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:descendantFocusability="blocksDescendants"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/mine_head_bg"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="15dp"
+                    android:paddingRight="15dp"
+                    android:paddingBottom="15dp">
+
+                    <RelativeLayout
+                        android:id="@+id/re_oval"
+                        android:layout_width="52dp"
+                        android:layout_height="52dp"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/oval_bg">
+
+                        <com.lianliantao.yuetuan.custom_view.CircleImageView
+                            android:id="@+id/user_iv"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_centerInParent="true" />
+
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_toLeftOf="@+id/ivMsg"
+                        android:layout_toRightOf="@+id/re_oval"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/nickName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:text="李晨奇"
+                            android:textColor="@color/white"
+                            android:textSize="14sp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:id="@+id/ivUserLevel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/super_vip" />
+
+                            <TextView
+                                android:id="@+id/tvUserLevel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="5dp"
+                                android:text="会员"
+                                android:textColor="@color/white"
+                                android:textSize="13sp" />
+
+                            <TextView
+                                android:id="@+id/inviteCode"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="5dp"
+                                android:text="邀请码： 123456"
+                                android:textColor="@color/white"
+                                android:textSize="13sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/ivSetting"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_alignParentRight="true"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/setting" />
+
+                    <ImageView
+                        android:id="@+id/ivMsg"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_toLeftOf="@+id/ivSetting"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/msg_p" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/mine_head_bg"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingBottom="40dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/ivZixun"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/wd_zuo_zixun" />
+
+                        <com.lianliantao.yuetuan.custom_view.UPMarqueeView
+                            android:id="@+id/upmarqueeview"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="15dp"
+                            android:layout_toLeftOf="@+id/tvLook"
+                            android:layout_toRightOf="@+id/ivZixun" />
+
+                        <TextView
+                            android:id="@+id/tvLook"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:background="@drawable/chakan_bg"
+                            android:gravity="center"
+                            android:paddingLeft="8dp"
+                            android:paddingTop="2dp"
+                            android:paddingRight="8dp"
+                            android:paddingBottom="2dp"
+                            android:text="查看"
+                            android:textColor="@color/white"
+                            android:textSize="12sp" />
+
+                    </RelativeLayout>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="-30dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/base_white_bg"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/tvYue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="10dp"
+                        android:text="余额(元)"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tvUserBalance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="5dp"
+                        android:layout_toRightOf="@+id/tvYue"
+                        android:textColor="@color/black"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/withDraw"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:gravity="center"
+                        android:paddingLeft="25dp"
+                        android:paddingRight="25dp"
+                        android:text="提现"
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+
+                </RelativeLayout>
+
+                <LinearLayout style="@style/llParentWhite">
+
+                    <RelativeLayout
+                        android:id="@+id/reMyincome"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            style="@style/tvLabel"
+                            android:drawableLeft="@drawable/wd_zuo_iconshouyi"
+                            android:gravity="center_vertical"
+                            android:text="我的收益" />
+
+                        <ImageView style="@style/ivArrows" />
+
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.3dp"
+                        android:layout_marginTop="15dp"
+                        android:background="@color/gray" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:id="@+id/llToday"
+                            style="@style/llCommon">
+
+                            <TextView
+                                android:id="@+id/todayEstimate"
+                                style="@style/tvCommonMoney" />
+
+                            <TextView
+                                style="@style/tvCommonWenben"
+                                android:text="今日预估(元)" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/llYestday"
+                            style="@style/llCommon">
+
+                            <TextView
+                                android:id="@+id/yestdayEstimate"
+                                style="@style/tvCommonMoney" />
+
+                            <TextView
+                                style="@style/tvCommonWenben"
+                                android:text="昨日预估(元)" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/llThisMonth"
+                            style="@style/llCommon">
+
+                            <TextView
+                                android:id="@+id/monthEstyimate"
+                                style="@style/tvCommonMoney" />
+
+                            <TextView
+                                style="@style/tvCommonWenben"
+                                android:text="本月预估(元)" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/llLastMonth"
+                            style="@style/llCommon">
+
+                            <TextView
+                                android:id="@+id/lastMonthEstyimate"
+                                style="@style/tvCommonMoney" />
+
+                            <TextView
+                                style="@style/tvCommonWenben"
+                                android:text="上月预估(元)" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/llMyOrder"
+                    style="@style/llOrdeCommon">
+
+                    <LinearLayout style="@style/llCommon">
+
+                        <ImageView
+                            style="@style/ivCommonPersonal"
+                            android:src="@drawable/wd_cet_dingdanicon" />
+
+                        <TextView
+                            style="@style/tvOrder"
+                            android:text="我的订单" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/llTeamOrder"
+                        style="@style/llCommon">
+
+                        <ImageView
+                            style="@style/ivCommonPersonal"
+                            android:src="@drawable/wd_cet_tddingdanicon" />
+
+                        <TextView
+                            style="@style/tvOrder"
+                            android:text="团队订单" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/llMyteam"
+                        style="@style/llCommon">
+
+                        <ImageView
+                            style="@style/ivCommonPersonal"
+                            android:src="@drawable/wd_cet_wdtuanduiicon" />
+
+                        <TextView
+                            style="@style/tvOrder"
+                            android:text="我的团队" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/llIncoming"
+                        style="@style/llCommon">
+
+                        <ImageView
+                            style="@style/ivCommonPersonal"
+                            android:src="@drawable/wd_cet_srbaobiaoicon" />
+
+                        <TextView
+                            style="@style/tvOrder"
+                            android:text="收入报表" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout style="@style/llParentWhite">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            style="@style/tvLabel"
+                            android:drawableLeft="@drawable/wd_zuo_iconshiyonggongju"
+                            android:text="实时工具" />
+
+                        <ImageView
+                            style="@style/ivArrows"
+                            android:visibility="gone" />
+
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.3dp"
+                        android:layout_marginTop="15dp"
+                        android:background="@color/gray" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:id="@+id/llDiTuiWuLiao"
+                            style="@style/llCommon">
+
+                            <ImageView
+                                style="@style/ivCommonPersonal"
+                                android:src="@drawable/wd_cent_dituiicon" />
+
+                            <TextView
+                                style="@style/tvOrder"
+                                android:text="地推物料" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/llShangXueYuan"
+                            style="@style/llCommon">
+
+                            <ImageView
+                                style="@style/ivCommonPersonal"
+                                android:src="@drawable/wd_cent_shangxueyuaniicon" />
+
+                            <TextView
+                                style="@style/tvOrder"
+                                android:text="商学院" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/llXinShouJiao"
+                            style="@style/llCommon">
+
+                            <ImageView
+                                style="@style/ivCommonPersonal"
+                                android:src="@drawable/wd_cent_xinshouicon" />
+
+                            <TextView
+                                style="@style/tvOrder"
+                                android:text="新手教程" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginBottom="15dp"
+                    android:background="@drawable/base_white_bg"
+                    android:nestedScrollingEnabled="false"
+                    android:scrollbars="none" />
+
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+
+</LinearLayout>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <external-path
+        name="MyPetRoot"
+        path="MyPet/" />
+    <external-path
+        name="sdcard_root"
+        path="." />
+</paths>
