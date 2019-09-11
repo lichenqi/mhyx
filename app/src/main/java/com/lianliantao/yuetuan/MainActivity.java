@@ -35,6 +35,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.jpush.android.api.JPushInterface;
 
 public class MainActivity extends OriginalActivity {
     @BindView(R.id.fl_container)
@@ -103,6 +104,13 @@ public class MainActivity extends OriginalActivity {
         textViewList.add(tvTicket);
         textViewList.add(tvMine);
         replaceFragment(curIndex);
+        if (PreferUtils.getBoolean(getApplicationContext(), CommonApi.ISLOGIN)) {
+            String mobile = PreferUtils.getString(getApplicationContext(), "mobile");
+            /*登录状态就设置极光推送*/
+            if (!TextUtils.isEmpty(mobile)) {
+                JPushInterface.setAlias(getApplicationContext(), 0, mobile);
+            }
+        }
     }
 
     @OnClick({R.id.ll_home, R.id.ll_circle, R.id.ll_money, R.id.ll_ticket, R.id.ll_mine})

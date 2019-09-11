@@ -52,8 +52,14 @@ public class RankingListAdapter extends RecyclerView.Adapter<RankingListAdapter.
         Glide.with(context).load(bean.getPictUrl()).into(holder.iv);
         IconAndTextGroupUtil.setTextView(context, holder.title, bean.getTitle(), bean.getUserType());
         holder.assistantTitle.setText(bean.getItemDescription());
-        holder.estimateMoney.setText("预估赚 ¥ " + bean.getEstimatedEarn());
-        holder.upgradeMoney.setText("升级赚 ¥ " + bean.getUpgradeEarn());
+        holder.estimateMoney.setText("预估赚 ¥ " + MoneyFormatUtil.StringFormatWithYuan(bean.getEstimatedEarn()));
+        String upgradeEarn = MoneyFormatUtil.StringFormatWithYuan(bean.getUpgradeEarn());
+        if (upgradeEarn.equals("0")) {
+            holder.upgradeMoney.setVisibility(View.GONE);
+        } else {
+            holder.upgradeMoney.setVisibility(View.VISIBLE);
+            holder.upgradeMoney.setText("升级赚 ¥ " + upgradeEarn);
+        }
         holder.tvSalePrice.setText(MoneyFormatUtil.StringFormatWithYuan(bean.getPayPrice()));
         holder.tvOldPrice.setText("¥" + MoneyFormatUtil.StringFormatWithYuan(bean.getZkFinalPrice()));
         holder.tvOldPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);

@@ -32,7 +32,7 @@ public class PreferUtils {
         PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(key, value).commit();
     }
 
-    public static int getInt(Context context, String key) {
+    public static int getInt(Context context, String key, int i) {
         return PreferenceManager.getDefaultSharedPreferences(context).getInt(key, 0);
     }
 

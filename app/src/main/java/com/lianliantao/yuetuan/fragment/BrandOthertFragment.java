@@ -9,26 +9,24 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.ali.auth.third.core.model.Session;
-import com.alibaba.baichuan.trade.biz.login.AlibcLogin;
-import com.alibaba.baichuan.trade.biz.login.AlibcLoginCallback;
 import com.jcodecraeer.xrecyclerview.XRecyclerView;
 import com.lianliantao.yuetuan.R;
-import com.lianliantao.yuetuan.activity.TaoBaoAuthActivity;
 import com.lianliantao.yuetuan.app_manage.MyApplication;
 import com.lianliantao.yuetuan.bean.OtherListBean;
 import com.lianliantao.yuetuan.common_manager.CommonParamUtil;
 import com.lianliantao.yuetuan.constant.CommonApi;
-import com.lianliantao.yuetuan.dianpu.MyShopActivity;
+import com.lianliantao.yuetuan.dianpu.CheckUserBeian2ShopManager;
 import com.lianliantao.yuetuan.fragment_adapter.BrandOtherListAdapter;
-import com.lianliantao.yuetuan.itemdecoration.ChooseBrandItemDecoration;
+import com.lianliantao.yuetuan.itemdecoration.BrandBaseItem;
 import com.lianliantao.yuetuan.lazy_base_fragment.LazyBaseFragment;
 import com.lianliantao.yuetuan.login_and_register.MyWXLoginActivity;
 import com.lianliantao.yuetuan.myokhttputils.response.JsonResponseHandler;
 import com.lianliantao.yuetuan.port_inner.OnItemClick;
+import com.lianliantao.yuetuan.util.DensityUtils;
 import com.lianliantao.yuetuan.util.GsonUtil;
 import com.lianliantao.yuetuan.util.PreferUtils;
 import com.lianliantao.yuetuan.util.ToastUtils;
@@ -80,13 +78,12 @@ public class BrandOthertFragment extends LazyBaseFragment {
         XRecyclerViewUtil.setView(recyclerview);
         recyclerview.setPullRefreshEnabled(false);
         recyclerview.setLayoutManager(new GridLayoutManager(context, 4));
-        recyclerview.addItemDecoration(new ChooseBrandItemDecoration(context));
+        recyclerview.addItemDecoration(new BrandBaseItem(DensityUtils.dip2px(context, 1)));
         adapter = new BrandOtherListAdapter(context, list);
         recyclerview.setAdapter(adapter);
         recyclerview.setLoadingListener(new XRecyclerView.LoadingListener() {
             @Override
             public void onRefresh() {
-
             }
 
             @Override
@@ -101,16 +98,11 @@ public class BrandOthertFragment extends LazyBaseFragment {
 
             @Override
             public void OnItemClickListener(View view, int position) {
+                /*店铺链接去跳转*/
                 if (PreferUtils.getBoolean(context, CommonApi.ISLOGIN)) {
-                    String hasBindTbk = PreferUtils.getString(context, "hasBindTbk");
-                    if (hasBindTbk.equals("true")) {
-                        intent = new Intent(context, MyShopActivity.class);
-                        intent.putExtra("shopId", list.get(position - 1).getShopId());
-                        intent.putExtra("shopTitle", list.get(position - 1).getBrandName());
-                        startActivity(intent);
-                    } else {
-                        taobaoBeiAn();
-                    }
+                    String shopId = list.get(position - 1).getShopId();
+                    CheckUserBeian2ShopManager manager = new CheckUserBeian2ShopManager(context, shopId, activity);
+                    manager.check();
                 } else {
                     intent = new Intent(context, MyWXLoginActivity.class);
                     startActivity(intent);
@@ -154,7 +146,7 @@ public class BrandOthertFragment extends LazyBaseFragment {
                         super.onSuccess(statusCode, response);
                         Log.i("其他列表数据", response.toString());
                         OtherListBean bean = GsonUtil.GsonToBean(response.toString(), OtherListBean.class);
-                        if (bean.getErrno() == bean.getErrno()) {
+                        if (bean.getErrno() == CommonApi.RESULTCODEOK) {
                             List<OtherListBean.BrandInfoBean> brandInfo = bean.getBrandInfo();
                             if (pageNum == 1) {
                                 list.clear();
@@ -177,27 +169,6 @@ public class BrandOthertFragment extends LazyBaseFragment {
 
     }
 
-    /*淘宝备案*/
-    private void taobaoBeiAn() {
-        AlibcLogin alibcLogin = AlibcLogin.getInstance();
-        alibcLogin.showLogin(new AlibcLoginCallback() {
-            @Override
-            public void onSuccess(int i) {
-                Session session = alibcLogin.getSession();
-                String nick = session.nick;/*淘宝昵称*/
-                String avatarUrl = session.avatarUrl;/*淘宝头像*/
-                Intent intent = new Intent(context, TaoBaoAuthActivity.class);
-                intent.putExtra("nick", nick);
-                intent.putExtra("avatarUrl", avatarUrl);
-                startActivity(intent);
-            }
-
-            @Override
-            public void onFailure(int i, String s) {
-            }
-        });
-    }
-
     @Override
     protected int getLayoutId() {
         return R.layout.brandothertfragment;
@@ -206,5 +177,13 @@ public class BrandOthertFragment extends LazyBaseFragment {
     @Override
     protected boolean setFragmentTarget() {
         return true;
+    }
+
+    FragmentActivity activity;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        activity = getActivity();
     }
 }

@@ -55,9 +55,9 @@ public class OneYuanAdapter extends RecyclerView.Adapter<OneYuanAdapter.MyHolder
         holder.iv.setLayoutParams(ivLayoutParams);
         Glide.with(context).load(list.get(position).getPictUrl()).into(holder.iv);
         IconAndTextGroupUtil.setTextView(context, holder.title, list.get(position).getTitle(), list.get(position).getUserType());
-        holder.price.setText("¥ " + MoneyFormatUtil.StringFormatWithYuan(list.get(position).getPayPrice()));
+        holder.price.setText("¥ " + MoneyFormatUtil.StringFormatWithYuan(list.get(position).getDiscountPrice()));
         holder.num.setText("剩余 " + NumUtil.getNum(list.get(position).getFreeRemainCount()));
-        holder.money.setText("先付款" + list.get(position).getDiscountPrice() + "   后补贴" + list.get(position).getSubsidyPrice());
+        holder.money.setText("先付款" + MoneyFormatUtil.StringFormatWithYuan(list.get(position).getPayPrice()) + "   后补贴" + list.get(position).getSubsidyPrice());
         if (onItemClick != null) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

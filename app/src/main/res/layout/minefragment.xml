@@ -68,7 +68,6 @@
                             android:layout_height="wrap_content"
                             android:ellipsize="end"
                             android:maxLines="1"
-                            android:text="李晨奇"
                             android:textColor="@color/white"
                             android:textSize="14sp" />
 
@@ -83,15 +82,13 @@
                                 android:id="@+id/ivUserLevel"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:scaleType="centerCrop"
-                                android:src="@drawable/super_vip" />
+                                android:scaleType="centerCrop" />
 
                             <TextView
                                 android:id="@+id/tvUserLevel"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="5dp"
-                                android:text="会员"
                                 android:textColor="@color/white"
                                 android:textSize="13sp" />
 
@@ -100,7 +97,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="5dp"
-                                android:text="邀请码： 123456"
                                 android:textColor="@color/white"
                                 android:textSize="13sp" />
 
@@ -402,7 +398,8 @@
 
                         <LinearLayout
                             android:id="@+id/llDiTuiWuLiao"
-                            style="@style/llCommon">
+                            style="@style/llCommon"
+                            android:visibility="gone">
 
                             <ImageView
                                 style="@style/ivCommonPersonal"

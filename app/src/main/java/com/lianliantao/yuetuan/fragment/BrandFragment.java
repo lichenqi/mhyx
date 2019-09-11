@@ -14,24 +14,21 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
-import com.ali.auth.third.core.model.Session;
-import com.alibaba.baichuan.trade.biz.login.AlibcLogin;
-import com.alibaba.baichuan.trade.biz.login.AlibcLoginCallback;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.tabs.TabLayout;
 import com.lianliantao.yuetuan.R;
-import com.lianliantao.yuetuan.activity.TaoBaoAuthActivity;
 import com.lianliantao.yuetuan.app_manage.MyApplication;
 import com.lianliantao.yuetuan.bean.BrandBean;
 import com.lianliantao.yuetuan.common_manager.CommonParamUtil;
 import com.lianliantao.yuetuan.constant.CommonApi;
-import com.lianliantao.yuetuan.dianpu.MyShopActivity;
+import com.lianliantao.yuetuan.dianpu.CheckUserBeian2ShopManager;
 import com.lianliantao.yuetuan.fragment_adapter.BrandHeadAdapter;
 import com.lianliantao.yuetuan.itemdecoration.CarItemDecoration;
 import com.lianliantao.yuetuan.login_and_register.MyWXLoginActivity;
@@ -40,7 +37,6 @@ import com.lianliantao.yuetuan.myutil.PhoneTopStyleUtil;
 import com.lianliantao.yuetuan.port_inner.OnItemClick;
 import com.lianliantao.yuetuan.util.DensityUtils;
 import com.lianliantao.yuetuan.util.GsonUtil;
-import com.lianliantao.yuetuan.util.ParamUtil;
 import com.lianliantao.yuetuan.util.PreferUtils;
 import com.lianliantao.yuetuan.util.ToastUtils;
 
@@ -79,6 +75,7 @@ public class BrandFragment extends Fragment {
     Bundle bundle;
     int statusBarHeight, i;
     List<BrandBean.CateInfoBean> cateInfo;
+    private Intent intent;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -228,20 +225,13 @@ public class BrandFragment extends Fragment {
                                 }
                                 brandHeadAdapter.setOnClickListerner(new OnItemClick() {
 
-                                    private Intent intent;
-
                                     @Override
                                     public void OnItemClickListener(View view, int position) {
+                                        /*店铺链接去跳转*/
                                         if (PreferUtils.getBoolean(context, CommonApi.ISLOGIN)) {
-                                            String hasBindTbk = PreferUtils.getString(context, "hasBindTbk");
-                                            if (hasBindTbk.equals("true")) {
-                                                intent = new Intent(context, MyShopActivity.class);
-                                                intent.putExtra("shopId", brandInfoList.get(position).getShopId());
-                                                intent.putExtra("shopTitle", brandInfoList.get(position).getBrandName());
-                                                startActivity(intent);
-                                            } else {
-                                                taobaoBeiAn();
-                                            }
+                                            String shopId = brandInfoList.get(position).getShopId();
+                                            CheckUserBeian2ShopManager manager = new CheckUserBeian2ShopManager(context, shopId, activity);
+                                            manager.check();
                                         } else {
                                             intent = new Intent(context, MyWXLoginActivity.class);
                                             startActivity(intent);
@@ -259,25 +249,12 @@ public class BrandFragment extends Fragment {
                 });
     }
 
-    /*淘宝备案*/
-    private void taobaoBeiAn() {
-        AlibcLogin alibcLogin = AlibcLogin.getInstance();
-        alibcLogin.showLogin(new AlibcLoginCallback() {
-            @Override
-            public void onSuccess(int i) {
-                Session session = alibcLogin.getSession();
-                String nick = session.nick;/*淘宝昵称*/
-                String avatarUrl = session.avatarUrl;/*淘宝头像*/
-                Intent intent = new Intent(context, TaoBaoAuthActivity.class);
-                intent.putExtra("nick", nick);
-                intent.putExtra("avatarUrl", avatarUrl);
-                startActivity(intent);
-            }
+    FragmentActivity activity;
 
-            @Override
-            public void onFailure(int i, String s) {
-            }
-        });
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        activity = getActivity();
     }
 
 }

@@ -122,7 +122,6 @@ public class HomeOtherFragment extends LazyBaseFragment {
         xrecyclerview.setLoadingListener(new XRecyclerView.LoadingListener() {
             @Override
             public void onRefresh() {
-
             }
 
             @Override
@@ -186,8 +185,8 @@ public class HomeOtherFragment extends LazyBaseFragment {
                             if (result.size() > 0) {
                                 if (pageNum == 1) {
                                     result.remove(0);
-                                    result.remove(1);
-                                    result.remove(2);
+                                    result.remove(0);
+                                    result.remove(0);
                                     list.clear();
                                     list.addAll(result);
                                     homeOtherListAdapter.notifyDataSetChanged();

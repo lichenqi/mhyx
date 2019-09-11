@@ -16,16 +16,24 @@ import com.bumptech.glide.Glide;
 import com.lianliantao.yuetuan.R;
 import com.lianliantao.yuetuan.activity.Circle2PhotoLookActivity;
 import com.lianliantao.yuetuan.activity.MultiGoodsCompoundPhotoActivity;
+import com.lianliantao.yuetuan.app_manage.MyApplication;
 import com.lianliantao.yuetuan.bean.CircleRecommendBean;
+import com.lianliantao.yuetuan.bean.PromotionlinkBean;
+import com.lianliantao.yuetuan.common_manager.CommonParamUtil;
+import com.lianliantao.yuetuan.constant.CommonApi;
 import com.lianliantao.yuetuan.custom_view.CircleImageView;
+import com.lianliantao.yuetuan.myokhttputils.response.JsonResponseHandler;
 import com.lianliantao.yuetuan.port_inner.OnItemClick;
+import com.lianliantao.yuetuan.util.GsonUtil;
 import com.lianliantao.yuetuan.util.MoneyFormatUtil;
 import com.lianliantao.yuetuan.util.NumUtil;
-import com.lianliantao.yuetuan.util.PreferUtils;
 import com.lianliantao.yuetuan.util.ToastUtils;
 import com.makeramen.roundedimageview.RoundedImageView;
 
+import org.json.JSONObject;
+
 import java.io.Serializable;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -36,6 +44,7 @@ public class CircleGoodRecommendAdapter extends RecyclerView.Adapter<CircleGoodR
     private Context context;
     private List<CircleRecommendBean.InfoBean> list;
     private OnItemClick shopDetailClick, copyContentClick, copyTaobaoLinkClick, shareClick;
+    private String itemId;
 
     /*长按复制商品内容*/
     public void setOnLongContentClickListener(OnItemClick copyContentClick) {
@@ -90,6 +99,7 @@ public class CircleGoodRecommendAdapter extends RecyclerView.Adapter<CircleGoodR
             holder.viewTwo.setVisibility(View.GONE);
             holder.reTaoParent.setVisibility(View.GONE);
         } else {
+            itemId = goodsInfo.getItemId();
             holder.viewOne.setVisibility(View.VISIBLE);
             holder.goShopdetail.setVisibility(View.VISIBLE);
             holder.viewTwo.setVisibility(View.VISIBLE);
@@ -140,28 +150,48 @@ public class CircleGoodRecommendAdapter extends RecyclerView.Adapter<CircleGoodR
         adapter.setOnClickListener(new OnItemClick() {
             @Override
             public void OnItemClickListener(View view, int position) {
-                String hasBindTbk = PreferUtils.getString(context, "hasBindTbk");
-                if (hasBindTbk.equals("true")) {/*淘宝已备案*/
-                    if (goodsInfo == null) {
-                        /*多个商品*/
-                        Intent intent = new Intent(context, MultiGoodsCompoundPhotoActivity.class);
-                        intent.putExtra("imageList", (Serializable) imgInfoList);
-                        intent.putExtra("position", position);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        context.startActivity(intent);
-                    } else {
-                        /*只有单个商品*/
-                        String itemId = goodsInfo.getItemId();
-                        Intent intent = new Intent(context, Circle2PhotoLookActivity.class);
-                        intent.putExtra("itemId", itemId);
-                        intent.putExtra("imageList", (Serializable) imgInfoList);
-                        intent.putExtra("position", position);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        context.startActivity(intent);
-                    }
-                } else {/*未备案*/
-                    ToastUtils.showBackgroudCenterToast(context, "请先淘宝渠道认证");
-                }
+                LinkedHashMap<String, String> map = new LinkedHashMap<>();
+                map.put("itemId", itemId);
+                String mapParam = CommonParamUtil.getOtherParamSign(context, map);
+                MyApplication.getInstance().getMyOkHttp().post().tag(this)
+                        .url(CommonApi.BASEURL + CommonApi.GETGOOD_PROMOTIONLINK + mapParam)
+                        .enqueue(new JsonResponseHandler() {
+
+                            @Override
+                            public void onSuccess(int statusCode, JSONObject response) {
+                                super.onSuccess(statusCode, response);
+                                PromotionlinkBean bean = GsonUtil.GsonToBean(response.toString(), PromotionlinkBean.class);
+                                int errno = bean.getErrno();
+                                if (errno == CommonApi.RESULTCODEOK) {
+                                    if (goodsInfo == null) {
+                                        /*多个商品*/
+                                        Intent intent = new Intent(context, MultiGoodsCompoundPhotoActivity.class);
+                                        intent.putExtra("imageList", (Serializable) imgInfoList);
+                                        intent.putExtra("position", position);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        context.startActivity(intent);
+                                    } else {
+                                        /*只有单个商品*/
+                                        String itemId = goodsInfo.getItemId();
+                                        Intent intent = new Intent(context, Circle2PhotoLookActivity.class);
+                                        intent.putExtra("itemId", itemId);
+                                        intent.putExtra("imageList", (Serializable) imgInfoList);
+                                        intent.putExtra("position", position);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        context.startActivity(intent);
+                                    }
+                                } else if (errno == 434) {/*未备案*/
+                                    ToastUtils.showBackgroudCenterToast(context, "请先淘宝渠道认证");
+                                } else {
+                                    ToastUtils.showToast(context, bean.getUsermsg());
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(int statusCode, String error_msg) {
+                                ToastUtils.showToast(context, CommonApi.ERROR_NET_MSG);
+                            }
+                        });
             }
         });
     }

@@ -24,6 +24,7 @@ import com.lianliantao.yuetuan.adapter.UserImageIvListAdapter;
 import com.lianliantao.yuetuan.adapter.UserLevelUpgradeListAdapter;
 import com.lianliantao.yuetuan.app_manage.MyApplication;
 import com.lianliantao.yuetuan.bean.LevelCentyBean;
+import com.lianliantao.yuetuan.bean.UserLevelBean;
 import com.lianliantao.yuetuan.common_manager.CommonParamUtil;
 import com.lianliantao.yuetuan.constant.CommonApi;
 import com.lianliantao.yuetuan.coverflow.CoverFlowLayoutManger;
@@ -32,7 +33,6 @@ import com.lianliantao.yuetuan.custom_view.CircleImageView;
 import com.lianliantao.yuetuan.myokhttputils.response.JsonResponseHandler;
 import com.lianliantao.yuetuan.myutil.PhoneTopStyleUtil;
 import com.lianliantao.yuetuan.util.GsonUtil;
-import com.lianliantao.yuetuan.util.ParamUtil;
 import com.lianliantao.yuetuan.util.PreferUtils;
 import com.lianliantao.yuetuan.util.ToastUtils;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -43,7 +43,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.json.JSONObject;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -144,6 +143,7 @@ public class UserLevelFragment extends Fragment {
             getOtherData();/*获取团队用户信息*/
             initSwipeRefresh();/*刷新控件*/
             initQuanXianOfficial();/*设置权限文案*/
+            getUserLevelData();/*获取用户等级接口*/
         }
         return view;
     }
@@ -212,6 +212,7 @@ public class UserLevelFragment extends Fragment {
                 setUserData();/*用户基本信息*/
                 getOtherData();/*获取团队用户信息*/
                 initQuanXianOfficial();/*设置权限文案*/
+                getUserLevelData();/*获取用户等级接口*/
                 refreshLayout.finishRefresh(1200);
             }
         });
@@ -300,4 +301,42 @@ public class UserLevelFragment extends Fragment {
         UserLevelUpgradeListAdapter adapter = new UserLevelUpgradeListAdapter(context, upgradeCondition);
         recyclerview.setAdapter(adapter);
     }
+
+    /*用户等级接口*/
+    private void getUserLevelData() {
+        MyApplication.getInstance().getMyOkHttp().post()
+                .url(CommonApi.BASEURL + CommonApi.USER_LEVEL + CommonParamUtil.getCommonParamSign(context))
+                .enqueue(new JsonResponseHandler() {
+
+                    @Override
+                    public void onSuccess(int statusCode, JSONObject response) {
+                        super.onSuccess(statusCode, response);
+                        Log.i("等级数据", response.toString());
+                        UserLevelBean bean = GsonUtil.GsonToBean(response.toString(), UserLevelBean.class);
+                        if (bean.getErrno() == CommonApi.RESULTCODEOK) {
+                            String level = bean.getLevel();
+                            switch (level) {
+                                case "1":
+                                    userLevel.setImageResource(R.mipmap.cjhy_top_wenzihuiyuan);
+                                    break;
+                                case "2":
+                                    userLevel.setImageResource(R.mipmap.cjhy_top_wenzichaojihuiyuan);
+                                    break;
+                                case "3":
+                                    userLevel.setImageResource(R.mipmap.cjhy_top_wenzizongjian);
+                                    break;
+                                case "4":
+                                    userLevel.setImageResource(R.mipmap.cjhy_top_wenzigaojizongjian);
+                                    break;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, String error_msg) {
+
+                    }
+                });
+    }
+
 }

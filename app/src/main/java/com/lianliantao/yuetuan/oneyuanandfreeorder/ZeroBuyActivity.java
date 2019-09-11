@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebChromeClient;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -19,8 +21,6 @@ import com.alibaba.baichuan.android.trade.AlibcTrade;
 import com.alibaba.baichuan.android.trade.callback.AlibcTradeCallback;
 import com.alibaba.baichuan.android.trade.model.AlibcShowParams;
 import com.alibaba.baichuan.android.trade.model.OpenType;
-import com.alibaba.baichuan.android.trade.page.AlibcBasePage;
-import com.alibaba.baichuan.android.trade.page.AlibcPage;
 import com.alibaba.baichuan.trade.biz.context.AlibcTradeResult;
 import com.alibaba.baichuan.trade.biz.login.AlibcLogin;
 import com.alibaba.baichuan.trade.biz.login.AlibcLoginCallback;
@@ -41,7 +41,7 @@ import com.lianliantao.yuetuan.myutil.StatusBarUtils;
 import com.lianliantao.yuetuan.port_inner.OnItemClick;
 import com.lianliantao.yuetuan.util.DialogUtil;
 import com.lianliantao.yuetuan.util.GsonUtil;
-import com.lianliantao.yuetuan.util.PreferUtils;
+import com.lianliantao.yuetuan.util.MoneyFormatUtil;
 import com.lianliantao.yuetuan.util.ToastUtils;
 
 import org.json.JSONObject;
@@ -87,7 +87,9 @@ public class ZeroBuyActivity extends OriginalActivity {
         layoutParams.height = statusBarHeight;
         viewHeight.setLayoutParams(layoutParams);
         tvTitle.setText("0元抢购免单");
-        alibcShowParams = new AlibcShowParams(OpenType.Native, true);
+        alibcShowParams = new AlibcShowParams();
+        alibcShowParams.setOpenType(OpenType.Native);
+        alibcShowParams.setBackUrl("alisdk://");
         getData();
         initWuXianZhi();
     }
@@ -148,12 +150,34 @@ public class ZeroBuyActivity extends OriginalActivity {
     }
 
     private void jump2Taobao() {
-        String hasBindTbk = PreferUtils.getString(getApplicationContext(), "hasBindTbk");
-        if (hasBindTbk.equals("true")) {/*已备案*/
-            noticeDialog();
-        } else {/*未备案*/
-            taobaoQuDaoAuthDialog();
-        }
+        LinkedHashMap<String, String> map = new LinkedHashMap<>();
+        map.put("itemId", noLimitList.get(positionWhich).getItemId());
+        String mapParam = CommonParamUtil.getOtherParamSign(getApplicationContext(), map);
+        MyApplication.getInstance().getMyOkHttp().post().tag(this)
+                .url(CommonApi.BASEURL + CommonApi.GETGOOD_PROMOTIONLINK + mapParam)
+                .enqueue(new JsonResponseHandler() {
+
+                    @Override
+                    public void onSuccess(int statusCode, JSONObject response) {
+                        super.onSuccess(statusCode, response);
+                        Log.i("淘宝链接", response.toString());
+                        PromotionlinkBean bean = GsonUtil.GsonToBean(response.toString(), PromotionlinkBean.class);
+                        int errno = bean.getErrno();
+                        if (errno == CommonApi.RESULTCODEOK) {
+                            noticeDialog();
+                        } else if (errno == 434) {
+                            /*未备案*/
+                            taobaoQuDaoAuthDialog();
+                        } else {
+                            ToastUtils.showToast(getApplicationContext(), bean.getUsermsg());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, String error_msg) {
+                        ToastUtils.showToast(getApplicationContext(), CommonApi.ERROR_NET_MSG);
+                    }
+                });
     }
 
     /*提示语弹框*/
@@ -166,8 +190,8 @@ public class ZeroBuyActivity extends OriginalActivity {
                 TextView price = holder.getView(R.id.price);
                 TextView subsidy = holder.getView(R.id.subsidy);
                 TextView sure = holder.getView(R.id.sure);
-                price.setText("商品付款 ¥ " + noLimitList.get(positionWhich).getPayPrice());
-                subsidy.setText("麻花优选补贴 ¥ " + noLimitList.get(positionWhich).getSubsidyPrice());
+                price.setText("商品付款 ¥ " + MoneyFormatUtil.StringFormatWithYuan(noLimitList.get(positionWhich).getPayPrice()));
+                subsidy.setText("麻花优选补贴 ¥ " + MoneyFormatUtil.StringFormatWithYuan(noLimitList.get(positionWhich).getSubsidyPrice()));
                 sure.setOnClickListener(new View.OnClickListener() {
 
                     @Override
@@ -201,21 +225,21 @@ public class ZeroBuyActivity extends OriginalActivity {
                         PromotionlinkBean bean = GsonUtil.GsonToBean(response.toString(), PromotionlinkBean.class);
                         if (bean.getErrno() == CommonApi.RESULTCODEOK) {
                             String couponClickUrl = bean.getLink();
-                            AlibcBasePage page = new AlibcPage(couponClickUrl);
                             HashMap<String, String> exParams = new HashMap<>();
                             exParams.put("isv_code", "appisvcode");
                             exParams.put("alibaba", "阿里巴巴");
-                            AlibcTrade.show(ZeroBuyActivity.this, page, alibcShowParams, null, exParams, new AlibcTradeCallback() {
-                                @Override
-                                public void onTradeSuccess(AlibcTradeResult alibcTradeResult) {
-                                    /*阿里百川进淘宝成功*/
-                                }
+                            // 以显示传入url的方式打开页面（第二个参数是套件名称 暂时传“”）
+                            AlibcTrade.openByUrl(ZeroBuyActivity.this, "", couponClickUrl, null,
+                                    new WebViewClient(), new WebChromeClient(), alibcShowParams,
+                                    null, exParams, new AlibcTradeCallback() {
+                                        @Override
+                                        public void onTradeSuccess(AlibcTradeResult tradeResult) {
+                                        }
 
-                                @Override
-                                public void onFailure(int i, String s) {
-                                    /*阿里百川进淘宝失败*/
-                                }
-                            });
+                                        @Override
+                                        public void onFailure(int code, String msg) {
+                                        }
+                                    });
                         } else {
                             ToastUtils.showBackgroudCenterToast(getApplicationContext(), bean.getUsermsg());
                         }
@@ -251,7 +275,7 @@ public class ZeroBuyActivity extends OriginalActivity {
                         AlibcLogin alibcLogin = AlibcLogin.getInstance();
                         alibcLogin.showLogin(new AlibcLoginCallback() {
                             @Override
-                            public void onSuccess(int i) {
+                            public void onSuccess(int i, String s, String s1) {
                                 Session session = alibcLogin.getSession();
                                 String nick = session.nick;/*淘宝昵称*/
                                 String avatarUrl = session.avatarUrl;/*淘宝头像*/
@@ -263,7 +287,6 @@ public class ZeroBuyActivity extends OriginalActivity {
 
                             @Override
                             public void onFailure(int i, String s) {
-
                             }
                         });
                     }

@@ -112,7 +112,6 @@ public class RankingListActivity extends OriginalActivity {
         xrecyclerview.setLoadingListener(new XRecyclerView.LoadingListener() {
             @Override
             public void onRefresh() {
-
             }
 
             @Override
@@ -154,13 +153,12 @@ public class RankingListActivity extends OriginalActivity {
     }
 
     private void initHeadView() {
+        tvTitle.setText(title);
         if (type.equals("9")) {
             ivHead.setImageResource(R.mipmap.img_gaoyongjin);
-            tvTitle.setText("高佣金商品");
             llTitleParent.setBackgroundResource(R.mipmap.gaoyongjin_title_bg);
         } else if (type.equals("8")) {
             ivHead.setImageResource(R.mipmap.taobaopaihangbang);
-            tvTitle.setText("出单排行版");
             llTitleParent.setBackgroundResource(R.mipmap.taobao_paihangbang_title);
         }
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) viewHeight.getLayoutParams();

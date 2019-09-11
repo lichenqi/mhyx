@@ -4,10 +4,16 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
+    <View
+        android:id="@+id/viewHight"
+        android:layout_width="match_parent"
+        android:layout_height="20dp" />
+
     <RelativeLayout
         android:id="@+id/reTop"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/viewHight"
         android:paddingTop="2dp"
         android:paddingBottom="2dp">
 

@@ -7,6 +7,8 @@ import com.lianliantao.yuetuan.bean.LoginBean;
 import com.lianliantao.yuetuan.constant.CommonApi;
 import com.lianliantao.yuetuan.util.PreferUtils;
 
+import cn.jpush.android.api.JPushInterface;
+
 public class UserSaveUtil {
 
     /*存储用户信息*/
@@ -23,6 +25,7 @@ public class UserSaveUtil {
         PreferUtils.putString(context, "appLink", userInfo.getAppLink());/*存储用户海报二维码信息*/
         PreferUtils.putString(context, "hasBindTbk", userInfo.getHasBindTbk());/*存储用户是否淘宝备案标识*/
         PreferUtils.putString(context, "wechatNumber", userInfo.getWechatNumber());/*存储用户设置的微信号字段*/
+        JPushInterface.setAlias(context, 0, userInfo.getMobile());/*用户名作为推送别名*/
     }
 
     /*关于uid存储为空处理*/

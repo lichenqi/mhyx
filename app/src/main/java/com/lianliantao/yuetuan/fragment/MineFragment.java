@@ -15,12 +15,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ali.auth.third.core.model.Session;
-import com.alibaba.baichuan.trade.biz.login.AlibcLogin;
-import com.alibaba.baichuan.trade.biz.login.AlibcLoginCallback;
 import com.bumptech.glide.Glide;
 import com.lianliantao.yuetuan.R;
 import com.lianliantao.yuetuan.activity.AppMsgActivity;
@@ -29,18 +27,18 @@ import com.lianliantao.yuetuan.activity.MyBaseHtml5Activity;
 import com.lianliantao.yuetuan.activity.MyOrderListActivity;
 import com.lianliantao.yuetuan.activity.MyTeamActivity;
 import com.lianliantao.yuetuan.activity.SettingActivity;
-import com.lianliantao.yuetuan.activity.TaoBaoAuthActivity;
 import com.lianliantao.yuetuan.activity.WithdrawDepositerActivity;
 import com.lianliantao.yuetuan.adapter.MineModuleAdapter;
 import com.lianliantao.yuetuan.app_manage.MyApplication;
 import com.lianliantao.yuetuan.bean.ConsultBean;
+import com.lianliantao.yuetuan.bean.UserLevelBean;
 import com.lianliantao.yuetuan.bean.UserMoneyBean;
 import com.lianliantao.yuetuan.collect.CollectListActivity;
 import com.lianliantao.yuetuan.common_manager.CommonParamUtil;
 import com.lianliantao.yuetuan.constant.CommonApi;
 import com.lianliantao.yuetuan.custom_view.CircleImageView;
 import com.lianliantao.yuetuan.custom_view.UPMarqueeView;
-import com.lianliantao.yuetuan.dianpu.MyShopActivity;
+import com.lianliantao.yuetuan.dianpu.CheckUserBeian2ShopManager;
 import com.lianliantao.yuetuan.mine_activity.ContantOurActivity;
 import com.lianliantao.yuetuan.myokhttputils.response.JsonResponseHandler;
 import com.lianliantao.yuetuan.myutil.JumpUtil;
@@ -176,6 +174,7 @@ public class MineFragment extends Fragment {
             initViewData();/*用户基本资料*/
             initMoudleView();/*设置列表*/
             initZiXunData();
+            getUserLevelData();/*获取用户等级接口*/
         }
         return view;
     }
@@ -312,10 +311,12 @@ public class MineFragment extends Fragment {
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
                 getUserData();
                 initViewData();
+                getUserLevelData();/*获取用户等级接口*/
                 refreshLayout.finishRefresh(1200);
             }
         });
     }
+
 
     @OnClick({R.id.user_iv, R.id.ivSetting, R.id.llMyOrder, R.id.llIncoming, R.id.llMyteam, R.id.reMyincome
             , R.id.llToday, R.id.llYestday, R.id.llThisMonth, R.id.llLastMonth, R.id.llTeamOrder, R.id.withDraw
@@ -428,38 +429,55 @@ public class MineFragment extends Fragment {
                 intent.putExtra("url", url);
                 startActivity(intent);
             } else if (redirectType.equals("ali")) {/*店铺跳转*/
-                String hasBindTbk = PreferUtils.getString(context, "hasBindTbk");
-                if (hasBindTbk.equals("true")) {
-                    String[] split = url.split("=");
-                    Intent intent = new Intent(context, MyShopActivity.class);
-                    intent.putExtra("shopId", split[1]);
-                    intent.putExtra("shopTitle", title);
-                    startActivity(intent);
-                } else {
-                    taobaoBeiAn();
-                }
+                String[] split = url.split("=");
+                CheckUserBeian2ShopManager manager = new CheckUserBeian2ShopManager(context, split[1], activity);
+                manager.check();
             }
         }
     }
 
-    /*淘宝渠道备案*/
-    private void taobaoBeiAn() {
-        AlibcLogin alibcLogin = AlibcLogin.getInstance();
-        alibcLogin.showLogin(new AlibcLoginCallback() {
-            @Override
-            public void onSuccess(int i) {
-                Session session = alibcLogin.getSession();
-                String nick = session.nick;/*淘宝昵称*/
-                String avatarUrl = session.avatarUrl;/*淘宝头像*/
-                intent = new Intent(context, TaoBaoAuthActivity.class);
-                intent.putExtra("nick", nick);
-                intent.putExtra("avatarUrl", avatarUrl);
-                startActivity(intent);
-            }
+    /*用户等级接口*/
+    private void getUserLevelData() {
+        MyApplication.getInstance().getMyOkHttp().post()
+                .url(CommonApi.BASEURL + CommonApi.USER_LEVEL + CommonParamUtil.getCommonParamSign(context))
+                .enqueue(new JsonResponseHandler() {
 
-            @Override
-            public void onFailure(int i, String s) {
-            }
-        });
+                    @Override
+                    public void onSuccess(int statusCode, JSONObject response) {
+                        super.onSuccess(statusCode, response);
+                        Log.i("等级数据", response.toString());
+                        UserLevelBean bean = GsonUtil.GsonToBean(response.toString(), UserLevelBean.class);
+                        if (bean.getErrno() == CommonApi.RESULTCODEOK) {
+                            String level = bean.getLevel();
+                            tvUserLevel.setText(bean.getUserRank());
+                            switch (level) {
+                                case "1":
+                                    ivUserLevel.setImageResource(R.drawable.wd_zuo_iconhuiyuan);
+                                    break;
+                                case "2":
+                                    ivUserLevel.setImageResource(R.drawable.super_vip);
+                                    break;
+                                case "3":
+                                    ivUserLevel.setImageResource(R.drawable.wd_zuo_iconzongjian);
+                                    break;
+                                case "4":
+                                    ivUserLevel.setImageResource(R.drawable.wd_zuo_icongaojizongjian);
+                                    break;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, String error_msg) {
+                    }
+                });
+    }
+
+    FragmentActivity activity;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        activity = getActivity();
     }
 }

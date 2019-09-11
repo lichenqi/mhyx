@@ -16,12 +16,15 @@ import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
 import com.lianliantao.yuetuan.myokhttputils.MyOkHttp;
 import com.mob.MobSDK;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.commonsdk.UMConfigure;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 
+import cn.jpush.android.api.JPushInterface;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
@@ -66,13 +69,19 @@ public class MyApplication extends MultiDexApplication {
 
             @Override
             public void onFailure(int i, String s) {
-                Log.i("是否成功", s);
+                Log.i("是否成功", s + "   " + i);
             }
         });
         /*初始化sharesdk*/
         MobSDK.init(this);
+        /*初始化友盟sdk*/ // 选用AUTO页面采集模式
+        UMConfigure.init(this, "5d70bb123fc19564db00054c", "Umeng", UMConfigure.DEVICE_TYPE_PHONE, null);
+        MobclickAgent.setPageCollectionMode(MobclickAgent.PageMode.AUTO);
+        /*极光推送*/
+        JPushInterface.init(this);
+        // 设置开启日志,发布时请关闭日志
+        JPushInterface.setDebugMode(true);
     }
-
 
     public static synchronized MyApplication getInstance() {
         return mInstance;

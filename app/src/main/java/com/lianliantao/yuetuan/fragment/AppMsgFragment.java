@@ -94,25 +94,21 @@ public class AppMsgFragment extends LazyBaseFragment {
                         AppMsgBean bean = GsonUtil.GsonToBean(response.toString(), AppMsgBean.class);
                         if (bean.getErrno() == CommonApi.RESULTCODEOK) {
                             List<AppMsgBean.NoticeInfoBean> noticeInfo = bean.getNoticeInfo();
-                            if (noticeInfo.size() > 0) {
-                                if (pageNum == 1) {
-                                    list.clear();
-                                    list.addAll(noticeInfo);
-                                    adapter.notifyDataSetChanged();
-                                    xrecyclerview.refreshComplete();
-                                } else {
-                                    list.addAll(noticeInfo);
-                                    adapter.notifyDataSetChanged();
-                                    xrecyclerview.loadMoreComplete();
-                                }
-                            } else {
+                            if (pageNum == 1) {
+                                list.clear();
+                                list.addAll(noticeInfo);
+                                adapter.notifyDataSetChanged();
                                 xrecyclerview.refreshComplete();
+                            } else {
+                                list.addAll(noticeInfo);
+                                adapter.notifyDataSetChanged();
                                 xrecyclerview.loadMoreComplete();
                             }
                         } else {
                             ToastUtils.showToast(context, bean.getUsermsg());
+                            xrecyclerview.refreshComplete();
+                            xrecyclerview.loadMoreComplete();
                         }
-
                     }
 
                     @Override

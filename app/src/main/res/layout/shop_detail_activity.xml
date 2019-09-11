@@ -103,13 +103,15 @@
             </RelativeLayout>
 
             <RelativeLayout
+                android:id="@+id/relijishengji"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#FEE8DA"
                 android:paddingLeft="10dp"
                 android:paddingTop="8dp"
                 android:paddingRight="10dp"
-                android:paddingBottom="8dp">
+                android:paddingBottom="8dp"
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/tvUpgradeContent"
@@ -336,8 +338,7 @@
                         android:paddingBottom="4dp"
                         android:text="进店逛逛"
                         android:textColor="@color/white"
-                        android:textSize="12sp"
-                        android:visibility="gone" />
+                        android:textSize="12sp" />
 
                 </RelativeLayout>
 

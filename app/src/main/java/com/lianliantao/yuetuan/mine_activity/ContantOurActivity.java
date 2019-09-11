@@ -2,8 +2,9 @@ package com.lianliantao.yuetuan.mine_activity;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -15,9 +16,7 @@ import androidx.core.content.ContextCompat;
 
 import com.lianliantao.yuetuan.R;
 import com.lianliantao.yuetuan.base_activity.BaseTitleActivity;
-import com.lianliantao.yuetuan.util.DensityUtils;
 import com.lianliantao.yuetuan.util.PosterPhotoSaveUtil;
-import com.lianliantao.yuetuan.util.QRCodeUtil;
 import com.lianliantao.yuetuan.util.ToastUtils;
 
 import butterknife.BindView;
@@ -39,8 +38,8 @@ public class ContantOurActivity extends BaseTitleActivity {
         super.onCreate(savedInstanceState);
         ButterKnife.bind(this);
         setMiddleTitle("联系我们");
-        codeBitmap = QRCodeUtil.createQRCodeBitmap("李晨奇", DensityUtils.dip2px(getApplicationContext(), 120), BitmapFactory.decodeResource(getResources(), R.mipmap.logo_seventy), 0.2f);
-        code.setImageBitmap(codeBitmap);
+//        codeBitmap = QRCodeUtil.createQRCodeBitmap("gh_5ed98ebf153c", DensityUtils.dip2px(getApplicationContext(), 120), BitmapFactory.decodeResource(getResources(), R.mipmap.logo_seventy), 0.2f);
+//        code.setImageBitmap(codeBitmap);
         code.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -58,7 +57,10 @@ public class ContantOurActivity extends BaseTitleActivity {
     }
 
     private void save() {
-        PosterPhotoSaveUtil.saveBitmap2file(codeBitmap, getApplicationContext());
+        Resources res = getResources();
+        BitmapDrawable d = (BitmapDrawable) res.getDrawable(R.mipmap.mahua_gzhao);
+        Bitmap bitmap = d.getBitmap();
+        PosterPhotoSaveUtil.saveBitmap2file(bitmap, getApplicationContext());
         ToastUtils.showBackgroudCenterToast(getApplicationContext(), "二维码已保存至手机图库");
     }
 

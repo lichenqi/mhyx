@@ -80,8 +80,14 @@ public class HomeOtherHeadAdapter extends RecyclerView.Adapter<HomeOtherHeadAdap
         holder.tvSalePrice.setText(MoneyFormatUtil.StringFormatWithYuan(list.get(position).getPayPrice()));
         holder.tvOldPrice.setText("¥ " + MoneyFormatUtil.StringFormatWithYuan(list.get(position).getZkFinalPrice()));
         holder.tvOldPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
-        holder.estimateMoney.setText("预估赚 ¥ " + list.get(position).getEstimatedEarn());
-        holder.upgradeMoney.setText("升级赚 ¥ " + list.get(position).getUpgradeEarn());
+        holder.estimateMoney.setText("预估赚 ¥ " + MoneyFormatUtil.StringFormatWithYuan(list.get(position).getEstimatedEarn()));
+        String upgradeEarn = MoneyFormatUtil.StringFormatWithYuan(list.get(position).getUpgradeEarn());
+        if (upgradeEarn.equals("0")) {
+            holder.upgradeMoney.setVisibility(View.GONE);
+        } else {
+            holder.upgradeMoney.setVisibility(View.VISIBLE);
+            holder.upgradeMoney.setText("升级赚 ¥ " + upgradeEarn);
+        }
         if (onItemClick != null) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -28,9 +28,9 @@ import com.alibaba.baichuan.android.trade.callback.AlibcTradeCallback;
 import com.alibaba.baichuan.android.trade.model.AlibcShowParams;
 import com.alibaba.baichuan.android.trade.model.OpenType;
 import com.alibaba.baichuan.android.trade.page.AlibcBasePage;
-import com.alibaba.baichuan.android.trade.page.AlibcPage;
 import com.alibaba.baichuan.android.trade.page.AlibcShopPage;
 import com.alibaba.baichuan.trade.biz.context.AlibcTradeResult;
+import com.alibaba.baichuan.trade.biz.core.taoke.AlibcTaokeParams;
 import com.lianliantao.yuetuan.R;
 import com.lianliantao.yuetuan.activity.GoodShareActivity;
 import com.lianliantao.yuetuan.app_manage.MyApplication;
@@ -91,7 +91,7 @@ public class MyShopActivity extends OriginalActivity {
     @BindView(R.id.llAction)
     RelativeLayout llAction;
     private AlibcShowParams alibcShowParams;//页面打开方式，默认，H5，Native
-    String shopId, goods_id, shopTitle;
+    String shopId, goods_id, shopTitle, sellerId;
     private String couponClickUrl;
     private ShopDeailBean.GoodsDetailBean goodsDetail;
 
@@ -105,10 +105,13 @@ public class MyShopActivity extends OriginalActivity {
         ViewGroup.LayoutParams layoutParams = viewHeight.getLayoutParams();
         layoutParams.height = statusBarHeight;
         viewHeight.setLayoutParams(layoutParams);
-        alibcShowParams = new AlibcShowParams(OpenType.H5, true);
+        alibcShowParams = new AlibcShowParams();
+        alibcShowParams.setOpenType(OpenType.Auto);
+        alibcShowParams.setBackUrl("alisdk://");
         Intent intent = getIntent();
         shopId = intent.getStringExtra("shopId");
         shopTitle = intent.getStringExtra("shopTitle");
+        sellerId = intent.getStringExtra("sellerId");
         tvTitle.setText(shopTitle);
         setWebView();
     }
@@ -123,18 +126,29 @@ public class MyShopActivity extends OriginalActivity {
         HashMap<String, String> exParams = new HashMap<>();
         exParams.put("isv_code", "appisvcode");
         exParams.put("alibaba", "阿里巴巴");
-        AlibcTrade.show(MyShopActivity.this, webview, new MyWebViewClient(), new MyWebChromeClient(), myShopPage, alibcShowParams, null, exParams, new AlibcTradeCallback() {
-            @Override
-            public void onTradeSuccess(AlibcTradeResult alibcTradeResult) {
-                //打开电商组件，用户操作中成功信息回调。tradeResult：成功信息（结果类型：加购，支付；支付结果）
-            }
 
-            @Override
-            public void onFailure(int i, String s) {
-                Log.i("失败原因", i + "    " + s);
-                //打开电商组件，用户操作中错误信息回调。code：错误码；msg：错误信息
-            }
-        });
+//        AlibcTaokeParams taokeParams = new AlibcTaokeParams("", "", "");
+//        taokeParams.setPid("mm_112883640_11584347_72287650277");
+//taokeParams.setAdzoneid("29932014");
+//adzoneid是需要taokeAppkey参数才可以转链成功&店铺页面需要卖家id（sellerId），具体设置方式如下：
+//        taokeParams.extraParams.put("taokeAppkey", "xxxxx");
+//        taokeParams.extraParams.put("sellerId", sellerId);
+
+
+        AlibcTrade.openByBizCode(MyShopActivity.this, myShopPage, webview, new MyWebViewClient(),
+                new MyWebChromeClient(), "shop", alibcShowParams, null,
+                exParams, new AlibcTradeCallback() {
+                    @Override
+                    public void onTradeSuccess(AlibcTradeResult tradeResult) {
+                        // 交易成功回调（其他情形不回调）
+                    }
+
+                    @Override
+                    public void onFailure(int code, String msg) {
+                        // 失败回调信息
+                    }
+                });
+
     }
 
     public class MyWebViewClient extends WebViewClient {
@@ -158,6 +172,7 @@ public class MyShopActivity extends OriginalActivity {
                     Uri uri = Uri.parse(url);
                     /*获取商品id*/
                     goods_id = uri.getQueryParameter("id");
+                    Log.i("店铺id", goods_id);
                     if (!TextUtils.isEmpty(uri.getQueryParameter("id")) || !TextUtils.isEmpty(uri.getQueryParameter("itemId"))) {
                         tvNotice.setVisibility(View.VISIBLE);
                         llYijianView.setVisibility(View.VISIBLE);
@@ -236,22 +251,24 @@ public class MyShopActivity extends OriginalActivity {
     }
 
     private void goToTaoBao() {
-        alibcShowParams = new AlibcShowParams(OpenType.Native, true);
-        AlibcBasePage page = new AlibcPage(couponClickUrl);
+        alibcShowParams = new AlibcShowParams();
+        alibcShowParams.setOpenType(OpenType.Native);
+        alibcShowParams.setBackUrl("alisdk://");
         HashMap<String, String> exParams = new HashMap<>();
         exParams.put("isv_code", "appisvcode");
         exParams.put("alibaba", "阿里巴巴");
-        AlibcTrade.show(MyShopActivity.this, page, alibcShowParams, null, exParams, new AlibcTradeCallback() {
-            @Override
-            public void onTradeSuccess(AlibcTradeResult alibcTradeResult) {
-                /*阿里百川进淘宝成功*/
-            }
+        // 以显示传入url的方式打开页面（第二个参数是套件名称 暂时传“”）
+        AlibcTrade.openByUrl(MyShopActivity.this, "", couponClickUrl, null,
+                new WebViewClient(), new WebChromeClient(), alibcShowParams,
+                null, exParams, new AlibcTradeCallback() {
+                    @Override
+                    public void onTradeSuccess(AlibcTradeResult tradeResult) {
+                    }
 
-            @Override
-            public void onFailure(int i, String s) {
-                /*阿里百川进淘宝失败*/
-            }
-        });
+                    @Override
+                    public void onFailure(int code, String msg) {
+                    }
+                });
     }
 
     private void getGoodDetailData() {

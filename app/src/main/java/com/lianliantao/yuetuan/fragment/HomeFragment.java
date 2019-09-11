@@ -163,6 +163,38 @@ public class HomeFragment extends Fragment {
             tablayout.setupWithViewPager(viewpager);
             viewpager.setCurrentItem(0);
             viewpager.setOffscreenPageLimit(fragments.size());
+            viewpager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                }
+
+                @Override
+                public void onPageSelected(int position) {
+                    if (position == 0) {
+                        int colorChange = PreferUtils.getInt(context, "colorChange", 0);
+                        int recyclerviewHeight = PreferUtils.getInt(context, "recyclerviewHeight", 0);
+                        if (recyclerviewHeight == 0) {
+                            if (colorChange == 0) {
+                                llParent.setBackgroundColor(0xfffa6025);
+                                appbarlayout.setBackgroundColor(0xfffa6025);
+                            } else {
+                                llParent.setBackgroundColor(colorChange);
+                                appbarlayout.setBackgroundColor(colorChange);
+                            }
+                        } else if (recyclerviewHeight == 1300) {
+                            llParent.setBackgroundColor(0xfffa6025);
+                            appbarlayout.setBackgroundColor(0xfffa6025);
+                        }
+                    } else {
+                        llParent.setBackgroundColor(0xfffa6025);
+                        appbarlayout.setBackgroundColor(0xfffa6025);
+                    }
+                }
+
+                @Override
+                public void onPageScrollStateChanged(int state) {
+                }
+            });
         }
     }
 

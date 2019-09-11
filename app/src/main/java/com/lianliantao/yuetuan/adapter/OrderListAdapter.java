@@ -57,15 +57,23 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.Orde
         switch (tkStatus) {
             case "3":
                 holder.orderStatus.setText("已结算");
+                holder.orderStatus.setBackgroundResource(R.drawable.order_jiesuan_bg);
+                holder.orderStatus.setTextColor(0xffffffff);
                 break;
             case "12":
                 holder.orderStatus.setText("已付款");
+                holder.orderStatus.setBackgroundResource(R.drawable.order_shouhuo_bg);
+                holder.orderStatus.setTextColor(0xffffffff);
                 break;
             case "13":
                 holder.orderStatus.setText("已失效");
+                holder.orderStatus.setBackgroundResource(R.drawable.order_shixiao_bg);
+                holder.orderStatus.setTextColor(0xff000000);
                 break;
             case "14":
                 holder.orderStatus.setText("已收货");
+                holder.orderStatus.setBackgroundResource(R.drawable.order_shouhuo_bg);
+                holder.orderStatus.setTextColor(0xffffffff);
                 break;
         }
         if (onItemClick != null) {

@@ -180,7 +180,7 @@ public class WeiXinSharePosterAndImgaeUrlUtil {
         LinearLayout.LayoutParams layoutParamsRe = (LinearLayout.LayoutParams) reIvBig.getLayoutParams();
         layoutParamsRe.height = widthPixels;
         reIvBig.setLayoutParams(layoutParamsRe);
-        Glide.with(context).load(goodsDetail.getPictUrl()).asBitmap().into(new SimpleTarget<Bitmap>() {
+        Glide.with(context).load(imgInfo.get(0).getUrl()).asBitmap().into(new SimpleTarget<Bitmap>() {
             @Override
             public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                 ivBig.setImageBitmap(resource);

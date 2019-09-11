@@ -36,7 +36,6 @@ public class UserAgreementActivity extends BaseTitleActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ButterKnife.bind(this);
-        setMiddleTitle("麻花优选CPS营销协议");
         String privacyLink = PreferUtils.getString(getApplicationContext(), "privacyLink");
         WebSettings settings = webview.getSettings();
         webview.setVerticalScrollBarEnabled(false);
@@ -57,6 +56,7 @@ public class UserAgreementActivity extends BaseTitleActivity {
             @Override
             public void onReceivedTitle(WebView view, String title) {
                 super.onReceivedTitle(view, title);
+                setMiddleTitle(title);
             }
         });
         webview.setWebViewClient(new WebViewClient() {

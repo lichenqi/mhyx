@@ -18,7 +18,7 @@ public class PosterPhotoSaveUtil {
         return UUID.randomUUID().toString();
     }
 
-    private static final String SD_PATH = Environment.getExternalStorageDirectory().getPath() + "/OA头像/";
+    private static final String SD_PATH = Environment.getExternalStorageDirectory().getPath() + "/magic/";
 
     public static void saveBitmap2file(Bitmap bmp, Context context) {
         String savePath;

@@ -8,7 +8,7 @@
         android:id="@+id/viewHeight"
         android:layout_width="match_parent"
         android:layout_height="20dp"
-        android:background="@color/black" />
+        android:background="@color/colorPrimary" />
 
     <LinearLayout
         android:id="@+id/llBack"
@@ -129,7 +129,7 @@
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:gravity="center"
-            android:text="《麻花优选CPS营销协议》和《隐私协议》"
+            android:text="《隐私协议》"
             android:textColor="@color/txblack"
             android:textSize="12sp" />
 

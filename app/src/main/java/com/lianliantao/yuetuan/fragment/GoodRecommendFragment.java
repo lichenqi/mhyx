@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,6 +31,7 @@ import com.lianliantao.yuetuan.R;
 import com.lianliantao.yuetuan.activity.TaoBaoAuthActivity;
 import com.lianliantao.yuetuan.app_manage.MyApplication;
 import com.lianliantao.yuetuan.bean.CircleRecommendBean;
+import com.lianliantao.yuetuan.bean.PromotionlinkBean;
 import com.lianliantao.yuetuan.common_manager.CommonParamUtil;
 import com.lianliantao.yuetuan.constant.CommonApi;
 import com.lianliantao.yuetuan.dialogfragment.BaseNiceDialog;
@@ -49,8 +51,6 @@ import com.lianliantao.yuetuan.myutil.WeiXinSharePosterAndImgaeUrlUtil;
 import com.lianliantao.yuetuan.photo_dispose_util.ShareNumData;
 import com.lianliantao.yuetuan.port_inner.OnItemClick;
 import com.lianliantao.yuetuan.util.GsonUtil;
-import com.lianliantao.yuetuan.util.ParamUtil;
-import com.lianliantao.yuetuan.util.PreferUtils;
 import com.lianliantao.yuetuan.util.ToastUtils;
 import com.lianliantao.yuetuan.util.XRecyclerViewUtil;
 
@@ -126,21 +126,19 @@ public class GoodRecommendFragment extends LazyBaseFragment {
                         CircleRecommendBean bean = GsonUtil.GsonToBean(response.toString(), CircleRecommendBean.class);
                         if (bean.getErrno() == CommonApi.RESULTCODEOK) {
                             List<CircleRecommendBean.InfoBean> info = bean.getInfo();
-                            if (info.size() > 0) {
-                                if (pageNum == 1) {
-                                    list.clear();
-                                    list.addAll(info);
-                                    adapter.notifyDataSetChanged();
-                                    xrecyclerview.refreshComplete();
-                                } else {
-                                    list.addAll(info);
-                                    adapter.notifyDataSetChanged();
-                                    xrecyclerview.loadMoreComplete();
-                                }
-                            } else {
+                            if (pageNum == 1) {
+                                list.clear();
+                                list.addAll(info);
+                                adapter.notifyDataSetChanged();
                                 xrecyclerview.refreshComplete();
+                            } else {
+                                list.addAll(info);
+                                adapter.notifyDataSetChanged();
                                 xrecyclerview.loadMoreComplete();
                             }
+                        } else {
+                            xrecyclerview.refreshComplete();
+                            xrecyclerview.loadMoreComplete();
                         }
                     }
 
@@ -190,15 +188,9 @@ public class GoodRecommendFragment extends LazyBaseFragment {
         adapter.setOnTaobaoLinkClickListener(new OnItemClick() {
             @Override
             public void OnItemClickListener(View view, int position) {
-                String hasBindTbk = PreferUtils.getString(context, "hasBindTbk");
-                if (hasBindTbk.equals("true")) {
-                    String itemId = list.get(position - 1).getGoodsInfo().getItemId();
-                    TKLCopyUtil tklCopyUtil = new TKLCopyUtil(context, itemId, (AppCompatActivity) getActivity());
-                    tklCopyUtil.copy();
-                } else {
-                    /*未认证 认证弹框**/
-                    taobaoQuDaoAuthDialog();
-                }
+                String itemId = list.get(position - 1).getGoodsInfo().getItemId();
+                TKLCopyUtil tklCopyUtil = new TKLCopyUtil(context, itemId, activity);
+                tklCopyUtil.copy();
             }
         });
         /*点击分享按钮*/
@@ -206,12 +198,17 @@ public class GoodRecommendFragment extends LazyBaseFragment {
             @Override
             public void OnItemClickListener(View view, int position) {
                 positionWhich = position - 1;
-                if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                        || ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    //没有存储权限
-                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                List<CircleRecommendBean.InfoBean.ImgInfoBean> imgInfo = list.get(positionWhich).getImgInfo();
+                if (imgInfo.size() > 0) {
+                    if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                            || ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        //没有存储权限
+                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                    } else {
+                        commonShareFunction();
+                    }
                 } else {
-                    commonShareFunction();
+                    ToastUtils.showBackgroudCenterToast(context, "暂无图片可供分享");
                 }
             }
         });
@@ -236,14 +233,34 @@ public class GoodRecommendFragment extends LazyBaseFragment {
     }
 
     private void commonShareFunction() {
-        String hasBindTbk = PreferUtils.getString(context, "hasBindTbk");
-        if (hasBindTbk.equals("true")) {
-            /*淘宝渠道已认证*/
-            shareDialog();
-        } else {
-            /*未认证 认证弹框**/
-            taobaoQuDaoAuthDialog();
-        }
+        String itemId = list.get(positionWhich).getGoodsInfo().getItemId();
+        LinkedHashMap<String, String> map = new LinkedHashMap<>();
+        map.put("itemId", itemId);
+        String mapParam = CommonParamUtil.getOtherParamSign(context, map);
+        MyApplication.getInstance().getMyOkHttp().post().tag(this)
+                .url(CommonApi.BASEURL + CommonApi.GETGOOD_PROMOTIONLINK + mapParam)
+                .enqueue(new JsonResponseHandler() {
+
+                    @Override
+                    public void onSuccess(int statusCode, JSONObject response) {
+                        super.onSuccess(statusCode, response);
+                        PromotionlinkBean bean = GsonUtil.GsonToBean(response.toString(), PromotionlinkBean.class);
+                        int errno = bean.getErrno();
+                        if (errno == CommonApi.RESULTCODEOK) {
+                            /*淘宝渠道已认证*/
+                            shareDialog();
+                        } else if (errno == 434) {/*未备案*/
+                            taobaoQuDaoAuthDialog();
+                        } else {
+                            ToastUtils.showToast(context, bean.getUsermsg());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, String error_msg) {
+                        ToastUtils.showToast(context, CommonApi.ERROR_NET_MSG);
+                    }
+                });
     }
 
     /*分享弹框*/
@@ -385,7 +402,7 @@ public class GoodRecommendFragment extends LazyBaseFragment {
                         AlibcLogin alibcLogin = AlibcLogin.getInstance();
                         alibcLogin.showLogin(new AlibcLoginCallback() {
                             @Override
-                            public void onSuccess(int i) {
+                            public void onSuccess(int i, String s, String s1) {
                                 Session session = alibcLogin.getSession();
                                 String nick = session.nick;/*淘宝昵称*/
                                 String avatarUrl = session.avatarUrl;/*淘宝头像*/
@@ -397,7 +414,6 @@ public class GoodRecommendFragment extends LazyBaseFragment {
 
                             @Override
                             public void onFailure(int i, String s) {
-
                             }
                         });
                     }
@@ -410,4 +426,11 @@ public class GoodRecommendFragment extends LazyBaseFragment {
         taobaoAuthDialog.setCancelable(false);
     }
 
+    FragmentActivity activity;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        activity = getActivity();
+    }
 }

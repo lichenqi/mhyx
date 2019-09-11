@@ -50,7 +50,7 @@ public class BrandBean extends BaseBean {
         private String brandName;
         private String logo;
         private String rebateRate;
-        private String shopId;
+        private String shopId;/*卖家id*/
 
         public String getShopId() {
             return shopId;

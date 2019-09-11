@@ -21,7 +21,7 @@ public class ScrollingDigitalAnimation extends TextView {
     private String numStart = "0";  //起始值
     private String numEnd;          //结束值
 
-    private long duration = 1500; //持续时间
+    private long duration = 1000; //持续时间
 
     private String prefixString = "";  //前缀字符串
     private String postfixString = ""; //后缀字符串

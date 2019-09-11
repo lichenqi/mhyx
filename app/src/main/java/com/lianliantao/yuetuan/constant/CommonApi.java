@@ -114,4 +114,9 @@ public class CommonApi {
     public static final String APP_CHEAPER = "app/cheaper";
     /*app系统配置信息*/
     public static final String SYS_DATA = "sys/init";
+    public static final String USER_LEVEL = "u/UserRankInfo";
+    /*店铺转链*/
+    public static final String GOOD_SHOP_LINK = "goods/Shoplink";
+    /*天猫活动链接*/
+    public static final String TIANMAO_ACTIVITY_LINK = "goods/activitylink";
 }

@@ -54,7 +54,8 @@
             android:paddingTop="2dp"
             android:paddingBottom="2dp"
             android:textColor="@color/white"
-            android:textSize="10sp" />
+            android:textSize="10sp"
+            android:visibility="gone" />
 
     </LinearLayout>
 

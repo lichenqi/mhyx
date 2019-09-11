@@ -166,6 +166,7 @@ public class CollectListActivity extends BaseTitleActivity {
                             xrecyclerview.setPullRefreshEnabled(true);
                             xrecyclerview.refresh();
                             EventBus.getDefault().post(CommonApi.COLLECT_CHANGE);
+                            savePosition.clear();
                         } else {
                             ToastUtils.showToast(getApplicationContext(), bean.getUsermsg());
                         }
@@ -237,6 +238,9 @@ public class CollectListActivity extends BaseTitleActivity {
                         HomeListBean bean = GsonUtil.GsonToBean(response.toString(), HomeListBean.class);
                         if (bean.getErrno() == CommonApi.RESULTCODEOK) {
                             List<HomeListBean.GoodsInfoBean> goodsInfo = bean.getGoodsInfo();
+                            tv_right_name.setText("编辑");
+                            llBottom.setVisibility(View.GONE);
+                            is_edit = true;
                             if (pageNum == 1) {
                                 if (goodsInfo.size() == 0) {
                                     nodata.setVisibility(View.VISIBLE);
@@ -257,7 +261,6 @@ public class CollectListActivity extends BaseTitleActivity {
 
                     @Override
                     public void onFailure(int statusCode, String error_msg) {
-
                     }
                 });
     }

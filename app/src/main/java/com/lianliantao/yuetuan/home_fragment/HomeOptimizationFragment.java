@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -85,11 +86,31 @@ public class HomeOptimizationFragment extends LazyBaseFragment implements ViewPa
     int widthPixels, spaceheight;
     private RecyclerView recyclerview;
     private LinearLayout llParent;
-    private AppBarLayout appBarLayout;
+    private AppBarLayout appbarlayout;
+
+    /*用户可见和不可见方法设置*/
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {/*可见*/
+            if (banner != null) {
+                if (recyclerviewHeight < 1300) {
+                    banner.startAutoPlay();
+                }
+            }
+        } else {
+            if (banner != null) {
+                banner.stopAutoPlay();
+            }
+        }
+    }
+
+    public HomeOptimizationFragment() {
+    }
 
     public HomeOptimizationFragment(LinearLayout llParent, AppBarLayout appbarlayout) {
         this.llParent = llParent;
-        this.appBarLayout = appbarlayout;
+        this.appbarlayout = appbarlayout;
     }
 
     @Override
@@ -118,10 +139,11 @@ public class HomeOptimizationFragment extends LazyBaseFragment implements ViewPa
                     @Override
                     public void onSuccess(int statusCode, JSONObject response) {
                         super.onSuccess(statusCode, response);
-                        Log.i("省钱数据", response.toString());
                         CheaperBean bean = GsonUtil.GsonToBean(response.toString(), CheaperBean.class);
                         if (bean.getErrno() == CommonApi.RESULTCODEOK) {
                             String cheaper = bean.getCheaper();
+                            /*数字跳动*/
+                            dnView.setNumberString(cheaper);
                         }
                     }
 
@@ -141,6 +163,8 @@ public class HomeOptimizationFragment extends LazyBaseFragment implements ViewPa
         }
     }
 
+    int recyclerviewHeight;
+
     private void initRecyclerview() {
         LinearLayoutManager manager = new LinearLayoutManager(context);
         xrecyclerview.setHasFixedSize(true);
@@ -154,7 +178,6 @@ public class HomeOptimizationFragment extends LazyBaseFragment implements ViewPa
         xrecyclerview.setLoadingListener(new XRecyclerView.LoadingListener() {
             @Override
             public void onRefresh() {
-
             }
 
             @Override
@@ -178,11 +201,23 @@ public class HomeOptimizationFragment extends LazyBaseFragment implements ViewPa
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                int i = recyclerView.computeVerticalScrollOffset();
-                if (i > 1300) {
+                recyclerviewHeight = recyclerView.computeVerticalScrollOffset();
+                if (recyclerviewHeight > 1300) {
+                    PreferUtils.putInt(context, "recyclerviewHeight", 1300);
                     ivToTop.setVisibility(View.VISIBLE);
+                    llParent.setBackgroundColor(0xfffa6025);
+                    appbarlayout.setBackgroundColor(0xfffa6025);
+                    if (banner != null) {
+                        banner.stopAutoPlay();
+                    }
                 } else {
+                    PreferUtils.putInt(context, "recyclerviewHeight", 0);
                     ivToTop.setVisibility(View.GONE);
+                    llParent.setBackgroundColor(evaluate);
+                    appbarlayout.setBackgroundColor(evaluate);
+                    if (banner != null) {
+                        banner.startAutoPlay();
+                    }
                 }
             }
         });
@@ -224,9 +259,6 @@ public class HomeOptimizationFragment extends LazyBaseFragment implements ViewPa
         banner.setDelayTime(5000);
         //设置指示器位置（当banner模式中有指示器时）
         banner.setIndicatorGravity(BannerConfig.CENTER);
-        /*数字跳动*/
-        dnView.setNumberString("123456789");
-        dnView.setTextColor(0xfffa6025);
         banner.setOnPageChangeListener(this);
         /*今日免单等点击事件*/
         todayFreeClick();
@@ -303,7 +335,6 @@ public class HomeOptimizationFragment extends LazyBaseFragment implements ViewPa
                     @Override
                     public void onSuccess(int statusCode, JSONObject response) {
                         super.onSuccess(statusCode, response);
-                        Log.i("首页数据", response.toString());
                         SearchListBean bean = GsonUtil.GsonToBean(response.toString(), SearchListBean.class);
                         if (bean.getErrno() == CommonApi.RESULTCODEOK) {
                             List<SearchListBean.GoodsInfoBean> goodsInfo = bean.getGoodsInfo();
@@ -340,14 +371,14 @@ public class HomeOptimizationFragment extends LazyBaseFragment implements ViewPa
                     @Override
                     public void onSuccess(int statusCode, JSONObject response) {
                         super.onSuccess(statusCode, response);
-                        Log.i("首页头部数据", response.toString());
+                        Log.i("头部数据", response.toString());
                         homeHeadBean = GsonUtil.GsonToBean(response.toString(), HomeHeadBean.class);
                         if (homeHeadBean.getErrno() == CommonApi.RESULTCODEOK) {
                             List<HomeHeadBean.ActivityInfoBean> activityInfo = homeHeadBean.getActivityInfo();
                             bannerInfo = homeHeadBean.getBannerInfo();
                             menuInfo = homeHeadBean.getMenuInfo();
                             setTodayFreeChargeData(activityInfo);/*今日免单相关数据*/
-                            HomeHeadClassicAdapter adapter = new HomeHeadClassicAdapter(context, menuInfo);/*首页分类数据 淘抢购数据等*/
+                            HomeHeadClassicAdapter adapter = new HomeHeadClassicAdapter(context, menuInfo, activity);/*首页分类数据 淘抢购数据等*/
                             recyclerview.setAdapter(adapter);
                             setBannerData(bannerInfo);/*轮播图设置数据*/
                         }
@@ -364,7 +395,7 @@ public class HomeOptimizationFragment extends LazyBaseFragment implements ViewPa
         for (int i = 0; i < bannerInfo.size(); i++) {
             bannerList.add(bannerInfo.get(i).getLogo());
         }
-        banner.setOnBannerListener(new BannerOnClickListener(context, bannerInfo));
+        banner.setOnBannerListener(new BannerOnClickListener(context, bannerInfo, activity));
         banner.setImageLoader(new MyBannerRoundImageView()).setImages(bannerInfo).start();
     }
 
@@ -423,6 +454,7 @@ public class HomeOptimizationFragment extends LazyBaseFragment implements ViewPa
     }
 
     String first_color, second_color;
+    int evaluate;
 
     /*banner滑动监听事件*/
     @Override
@@ -436,23 +468,30 @@ public class HomeOptimizationFragment extends LazyBaseFragment implements ViewPa
         }
         int one_color = Color.parseColor(first_color);
         int two_color = Color.parseColor(second_color);
-        int evaluate = (Integer) argbEvaluator.evaluate(positionOffset, one_color, two_color);
+        evaluate = (Integer) argbEvaluator.evaluate(positionOffset, one_color, two_color);
         viewColor.setBackgroundColor(evaluate);
+        if (appbarlayout != null) {
+            appbarlayout.setBackgroundColor(evaluate);
+        }
         if (llParent != null) {
             llParent.setBackgroundColor(evaluate);
         }
-        if (appBarLayout != null) {
-            appBarLayout.setBackgroundColor(evaluate);
-        }
+        PreferUtils.putInt(context, "colorChange", evaluate);
     }
 
     @Override
     public void onPageSelected(int position) {
-
     }
 
     @Override
     public void onPageScrollStateChanged(int state) {
+    }
 
+    FragmentActivity activity;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        activity = getActivity();
     }
 }

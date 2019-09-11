@@ -9,19 +9,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ali.auth.third.core.model.Session;
-import com.alibaba.baichuan.trade.biz.login.AlibcLogin;
-import com.alibaba.baichuan.trade.biz.login.AlibcLoginCallback;
 import com.bumptech.glide.Glide;
 import com.lianliantao.yuetuan.R;
 import com.lianliantao.yuetuan.activity.MyBaseHtml5Activity;
-import com.lianliantao.yuetuan.activity.TaoBaoAuthActivity;
 import com.lianliantao.yuetuan.activity.TaoQiangGouActivity;
-import com.lianliantao.yuetuan.activity.TianMaoCommmonActivity;
 import com.lianliantao.yuetuan.bean.HomeHeadBean;
 import com.lianliantao.yuetuan.constant.CommonApi;
+import com.lianliantao.yuetuan.dianpu.TianMaoActivityManager;
 import com.lianliantao.yuetuan.home_classic.TaoBaoLikeActivity;
 import com.lianliantao.yuetuan.login_and_register.MyWXLoginActivity;
 import com.lianliantao.yuetuan.util.PreferUtils;
@@ -35,11 +32,13 @@ public class HomeHeadClassicAdapter extends RecyclerView.Adapter<HomeHeadClassic
 
     private Context context;
     private List<HomeHeadBean.MenuInfoBean> menuInfo;
+    private FragmentActivity activity;
     private Intent intent;
 
-    public HomeHeadClassicAdapter(Context context, List<HomeHeadBean.MenuInfoBean> menuInfo) {
+    public HomeHeadClassicAdapter(Context context, List<HomeHeadBean.MenuInfoBean> menuInfo, FragmentActivity activity) {
         this.menuInfo = menuInfo;
         this.context = context;
+        this.activity = activity;
     }
 
     @NonNull
@@ -97,16 +96,9 @@ public class HomeHeadClassicAdapter extends RecyclerView.Adapter<HomeHeadClassic
                         }
                     } else if (redirectType.equals("tianmao")) {/*天猫跳转*/
                         if (PreferUtils.getBoolean(context, CommonApi.ISLOGIN)) {
-                            String hasBindTbk = PreferUtils.getString(context, "hasBindTbk");
-                            if (hasBindTbk.equals("true")) {
-                                Intent intent = new Intent(context, TianMaoCommmonActivity.class);
-                                intent.putExtra("title", title);
-                                intent.putExtra("url", url);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                context.startActivity(intent);
-                            } else {
-                                taobaoBeiAn();
-                            }
+                            String[] split = url.split("=");
+                            TianMaoActivityManager tianMaoActivityManager = new TianMaoActivityManager(context, split[1], activity);
+                            tianMaoActivityManager.check();
                         } else {
                             intent = new Intent(context, MyWXLoginActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -114,28 +106,6 @@ public class HomeHeadClassicAdapter extends RecyclerView.Adapter<HomeHeadClassic
                         }
                     }
                 }
-            }
-        });
-    }
-
-    /*淘宝渠道备案*/
-    private void taobaoBeiAn() {
-        AlibcLogin alibcLogin = AlibcLogin.getInstance();
-        alibcLogin.showLogin(new AlibcLoginCallback() {
-            @Override
-            public void onSuccess(int i) {
-                Session session = alibcLogin.getSession();
-                String nick = session.nick;/*淘宝昵称*/
-                String avatarUrl = session.avatarUrl;/*淘宝头像*/
-                Intent intent = new Intent(context, TaoBaoAuthActivity.class);
-                intent.putExtra("nick", nick);
-                intent.putExtra("avatarUrl", avatarUrl);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
-            }
-
-            @Override
-            public void onFailure(int i, String s) {
             }
         });
     }

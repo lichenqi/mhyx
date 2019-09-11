@@ -69,7 +69,7 @@ public class ShopDeailBean extends BaseBean {
         private String shopTitle;
         private String shopType;
         private String shopUrl;
-        private String shopId;
+        private String sellerId;
         private String smallImages;
         private String title;
         private String upgradeEarn;
@@ -78,12 +78,12 @@ public class ShopDeailBean extends BaseBean {
         private String zkFinalPrice;
         private String upgradeEarnInfo;
 
-        public String getShopId() {
-            return shopId;
+        public String getSellerId() {
+            return sellerId;
         }
 
-        public void setShopId(String shopId) {
-            this.shopId = shopId;
+        public void setSellerId(String sellerId) {
+            this.sellerId = sellerId;
         }
 
         public String getUpgradeEarnInfo() {

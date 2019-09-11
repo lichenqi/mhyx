@@ -53,7 +53,13 @@ public class HomeOptimizationAdapter extends RecyclerView.Adapter<HomeOptimizati
         IconAndTextGroupUtil.setTextView(context, holder.title, list.get(position).getTitle(), list.get(position).getUserType());
         holder.assistantTitle.setText(list.get(position).getItemDescription());
         holder.estimateMoney.setText("预估赚 ¥ " + list.get(position).getEstimatedEarn());
-        holder.upgradeMoney.setText("升级赚 ¥ " + list.get(position).getUpgradeEarn());
+        String upgradeEarn = MoneyFormatUtil.StringFormatWithYuan(list.get(position).getUpgradeEarn());
+        if (upgradeEarn.equals("0")) {
+            holder.upgradeMoney.setVisibility(View.GONE);
+        } else {
+            holder.upgradeMoney.setVisibility(View.VISIBLE);
+            holder.upgradeMoney.setText("升级赚 ¥ " + list.get(position).getUpgradeEarn());
+        }
         holder.tvSalePrice.setText(MoneyFormatUtil.StringFormatWithYuan(list.get(position).getPayPrice()));
         holder.tvOldPrice.setText("¥" + MoneyFormatUtil.StringFormatWithYuan(list.get(position).getZkFinalPrice()));
         holder.tvOldPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);

@@ -50,8 +50,14 @@ public class HomeOtherListAdapter extends RecyclerView.Adapter<HomeOtherListAdap
     public void onBindViewHolder(@NonNull HomeOtherListHolder holder, int position) {
         Glide.with(context).load(list.get(position).getPictUrl()).into(holder.iv);
         IconAndTextGroupUtil.setTextView(context, holder.title, list.get(position).getTitle(), list.get(position).getUserType());
-        holder.estimateMoney.setText("预估赚 ¥ " + list.get(position).getEstimatedEarn());
-        holder.upgradeMoney.setText("升级赚 ¥ " + list.get(position).getUpgradeEarn());
+        holder.estimateMoney.setText("预估赚 ¥ " + MoneyFormatUtil.StringFormatWithYuan(list.get(position).getEstimatedEarn()));
+        String upgradeEarn = MoneyFormatUtil.StringFormatWithYuan(list.get(position).getUpgradeEarn());
+        if (upgradeEarn.equals("0")) {
+            holder.upgradeMoney.setVisibility(View.GONE);
+        } else {
+            holder.upgradeMoney.setVisibility(View.VISIBLE);
+            holder.upgradeMoney.setText("升级赚 ¥ " + upgradeEarn);
+        }
         holder.tv_price.setText(MoneyFormatUtil.StringFormatWithYuan(list.get(position).getPayPrice()));
         holder.old_price.setText("¥ " + MoneyFormatUtil.StringFormatWithYuan(list.get(position).getZkFinalPrice()));
         holder.old_price.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);

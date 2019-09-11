@@ -50,11 +50,18 @@ import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.sharesdk.framework.Platform;
+import cn.sharesdk.framework.PlatformActionListener;
+import cn.sharesdk.framework.ShareSDK;
+import cn.sharesdk.tencent.qq.QQ;
+import cn.sharesdk.wechat.friends.Wechat;
+import cn.sharesdk.wechat.moments.WechatMoments;
 
 public class YingXiaoOrXinShouOrShangXueYuanFragment extends LazyBaseFragment {
 
@@ -152,44 +159,139 @@ public class YingXiaoOrXinShouOrShangXueYuanFragment extends LazyBaseFragment {
                 RelativeLayout reWChat = holder.getView(R.id.reWChat);
                 RelativeLayout reWChatCircle = holder.getView(R.id.reWChatCircle);
                 RelativeLayout reQQ = holder.getView(R.id.reQQ);
-                reSave.setOnClickListener(new View.OnClickListener() {/*批量存图*/
+                /*批量存图*/
+                reSave.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         shareDialog.dismiss();
                         savePhoto2SDOrCircle();
                     }
                 });
-                reWChat.setOnClickListener(new View.OnClickListener() {/*微信好友分享*/
+                /*微信好友分享*/
+                reWChat.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         shareDialog.dismiss();
-                        OnlyImageNetUrlShareManager manager = new OnlyImageNetUrlShareManager(context, imgInfo, (AppCompatActivity) getActivity(), "WChatFriend");
-                        manager.setShare();
-                        ShareNumData shareNumData = new ShareNumData(context, list.get(positionWhich).getId());
-                        shareNumData.share();
+                        if (imgInfo.size() == 1) {
+                            /*单张图分享*/
+                            onePhotoOfWChatFriend();
+                        } else {
+                            /*多张图分享*/
+                            OnlyImageNetUrlShareManager manager = new OnlyImageNetUrlShareManager(context, imgInfo, (AppCompatActivity) getActivity(), "WChatFriend");
+                            manager.setShare();
+                            ShareNumData shareNumData = new ShareNumData(context, list.get(positionWhich).getId());
+                            shareNumData.share();
+                        }
                     }
                 });
-                reQQ.setOnClickListener(new View.OnClickListener() {/*QQ好友分享*/
+                /*QQ好友分享*/
+                reQQ.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         shareDialog.dismiss();
-                        OnlyImageNetUrlShareManager manager = new OnlyImageNetUrlShareManager(context, imgInfo, (AppCompatActivity) getActivity(), "QQFriend");
-                        manager.setShare();
-                        ShareNumData shareNumData = new ShareNumData(context, list.get(positionWhich).getId());
-                        shareNumData.share();
+                        if (imgInfo.size() == 1) {
+                            onePhotoOfQQFriend();
+                        } else {
+                            OnlyImageNetUrlShareManager manager = new OnlyImageNetUrlShareManager(context, imgInfo, (AppCompatActivity) getActivity(), "QQFriend");
+                            manager.setShare();
+                            ShareNumData shareNumData = new ShareNumData(context, list.get(positionWhich).getId());
+                            shareNumData.share();
+                        }
                     }
                 });
-                reWChatCircle.setOnClickListener(new View.OnClickListener() {/*微信朋友圈*/
+                /*微信朋友圈*/
+                reWChatCircle.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         shareDialog.dismiss();
-                        savePhoto2SDOrCircle();
+                        if (imgInfo.size() == 1) {
+                            onePhotoOfWChatCircle();
+                        } else {
+                            savePhoto2SDOrCircle();
+                        }
                     }
                 });
             }
         });
         shareDialog.show(getChildFragmentManager());
         shareDialog.setShowBottom(true);
+    }
+
+    /*微信好友单张图用sharesdk分享*/
+    private void onePhotoOfWChatFriend() {
+        Wechat.ShareParams sp = new Wechat.ShareParams();
+        sp.setImageUrl(imgInfo.get(0).getUrl());
+        sp.setShareType(Platform.SHARE_IMAGE);
+        Platform wechat = ShareSDK.getPlatform(Wechat.NAME);
+        wechat.setPlatformActionListener(new PlatformActionListener() {
+            @Override
+            public void onComplete(Platform platform, int i, HashMap<String, Object> hashMap) {
+                list.get(positionWhich).setShareNum(String.valueOf((Integer.valueOf(list.get(positionWhich).getShareNum()) + 1)));
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onError(Platform platform, int i, Throwable throwable) {
+            }
+
+            @Override
+            public void onCancel(Platform platform, int i) {
+            }
+        });
+        wechat.share(sp);
+        ShareNumData shareNumData = new ShareNumData(context, list.get(positionWhich).getId());
+        shareNumData.share();
+    }
+
+    /*qq单图分享*/
+    private void onePhotoOfQQFriend() {
+        QQ.ShareParams sp = new QQ.ShareParams();
+        sp.setImageUrl(imgInfo.get(0).getUrl());
+        sp.setShareType(Platform.SHARE_IMAGE);
+        Platform qq = ShareSDK.getPlatform(QQ.NAME);
+        qq.setPlatformActionListener(new PlatformActionListener() {
+            @Override
+            public void onComplete(Platform platform, int i, HashMap<String, Object> hashMap) {
+                list.get(positionWhich).setShareNum(String.valueOf((Integer.valueOf(list.get(positionWhich).getShareNum()) + 1)));
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onError(Platform platform, int i, Throwable throwable) {
+            }
+
+            @Override
+            public void onCancel(Platform platform, int i) {
+            }
+        });
+        qq.share(sp);
+        ShareNumData shareNumData = new ShareNumData(context, list.get(positionWhich).getId());
+        shareNumData.share();
+    }
+
+    private void onePhotoOfWChatCircle() {
+        WechatMoments.ShareParams sp = new WechatMoments.ShareParams();
+        sp.setImageUrl(imgInfo.get(0).getUrl());
+        sp.setShareType(Platform.SHARE_IMAGE);
+        Platform weChat = ShareSDK.getPlatform(WechatMoments.NAME);
+        weChat.setPlatformActionListener(new PlatformActionListener() {
+            @Override
+            public void onComplete(Platform platform, int i, HashMap<String, Object> hashMap) {
+                list.get(positionWhich).setShareNum(String.valueOf((Integer.valueOf(list.get(positionWhich).getShareNum()) + 1)));
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onError(Platform platform, int i, Throwable throwable) {
+            }
+
+            @Override
+            public void onCancel(Platform platform, int i) {
+            }
+        });
+        weChat.share(sp);
+        ShareNumData shareNumData = new ShareNumData(context, list.get(positionWhich).getId());
+        shareNumData.share();
     }
 
     private void savePhoto2SDOrCircle() {
