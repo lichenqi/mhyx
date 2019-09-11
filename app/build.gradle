@@ -1,0 +1,190 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.mob.sdk'
+/*正式签名md5值   e804543e8dc56824f5cf66b0ffd925dc   */
+/*正式签名sha1值   DE8470201EE24ACB8532F194EE25D2871F9A4583 */
+
+android {
+    signingConfigs {
+        config {
+            storeFile file('F:\\mhyhapp_keystore_location\\mhyh_app.jks')
+            storePassword '123456'
+            keyAlias = 'mahuayouxuan'
+            keyPassword '123456'
+        }
+    }
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.lianliantao.yuetuan"
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 100
+        versionName "1.0.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
+        }
+        /*极光推送配置*/
+        ndk {
+            //选择要添加的对应 cpu 类型的 .so 库。
+            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a'
+            // 还可以添加 'x86', 'x86_64', 'mips', 'mips64'
+        }
+        manifestPlaceholders = [
+                JPUSH_PKGNAME: applicationId,
+                JPUSH_APPKEY : "009e4aabc8c6b30045a4d555",
+                JPUSH_CHANNEL: "developer-default",
+        ]
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
+            aaptOptions.cruncherEnabled = false
+            aaptOptions.useNewCruncher = false
+        }
+        debug {
+            signingConfig signingConfigs.config
+        }
+    }
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:support-v4:28.0.0'
+    implementation 'com.android.support:design:28.0.0'
+    implementation 'com.android.support:recyclerview-v7:28.0.0'
+    /*okhttp3网络请求*/
+    implementation 'com.squareup.okhttp3:okhttp:3.9.1'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.9.1'
+    implementation 'com.squareup.okio:okio:1.9.0'
+    implementation 'com.google.code.gson:gson:2.8.5'
+    /*dex分包处理*/
+    implementation 'com.android.support:multidex:1.0.3'
+    //持久化存储cookie
+    implementation 'com.tsy:PersistentCookieJar:1.0.0'
+    implementation 'com.android.support:multidex:1.0.1'
+    implementation 'com.github.bumptech.glide:glide:3.7.0'
+    /*黄油刀注解*/
+    implementation 'com.jakewharton:butterknife:10.0.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.0.0'
+    /*加载和刷新控件*/
+    implementation 'com.jcodecraeer:xrecyclerview:1.5.9'
+    /*微信登录*/
+    implementation 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
+    //1.1.0 androidx 完美的刷新头功能版本
+    implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-alpha-27'
+    implementation 'com.scwang.smartrefresh:SmartRefreshHeader:1.1.0-alpha-27'
+    /*事件总线*/
+    implementation 'org.greenrobot:eventbus:3.0.0'
+    /*圆角图片*/
+    implementation 'com.makeramen:roundedimageview:2.3.0'
+    /*轮播图*/
+    implementation 'com.youth.banner:banner:1.4.10'
+    /*流式标签*/
+    implementation 'com.github.1002326270xc:LayoutManager-FlowLayout:v1.6'
+    /*二维码生成*/
+    implementation 'com.google.zxing:core:3.3.0'
+    /*修改手机顶部状态栏字体颜色*/
+    implementation 'com.readystatesoftware.systembartint:systembartint:1.0.3'
+
+    /*阿里百川系列start*/
+    //支付宝
+    implementation 'com.alipay.android.app.cashier:standardcashier-single:15.6.5@aar'
+    compileOnly 'com.alipay.mobile.android.securitysdk:apsecuritysdk-all:3.3.0'
+    //登陆
+    implementation 'com.ali.auth.sdk:alibabauth_core:2.0.0.6@aar'
+    implementation 'com.ali.auth.sdk:alibabauth_ui:2.0.0.6@aar'
+    implementation 'com.ali.auth.sdk:alibabauth_ext:2.0.0.6@aar'
+    //安全组件
+    implementation 'com.taobao.android:securityguardaar3:5.4.171@aar'
+    implementation 'com.taobao.android:securitybodyaar3:5.4.99@aar'
+    implementation 'com.taobao.android:avmpaar3:5.4.36@aar'
+    implementation 'com.taobao.android:sgmiddletieraar3:5.4.9@aar'
+    //Mtop
+    implementation 'com.taobao.android:mtopsdk_allinone_open:3.1.2.5@jar'
+    //applink
+    implementation 'com.alibaba.sdk.android:alibc_link_partner:4.1.6@aar'
+    //ut
+    implementation 'com.taobao.android:utdid4all:1.1.5.3_proguard'
+    implementation 'com.alibaba.mtl:app-monitor-sdk:2.6.4.5_for_bc'
+    // 电商基础组件
+    implementation 'com.alibaba.sdk.android:AlibcTradeCommon:4.0.0.0@aar'
+    implementation 'com.alibaba.sdk.android:AlibcTradeBiz:4.0.0.0@aar'
+    implementation 'com.alibaba.sdk.android:nb_trade:4.0.0.0@aar'
+    implementation 'com.alibaba:fastjson:1.2.41'
+    /*阿里百川系列end*/
+
+    /*友盟统计*/
+    implementation 'com.umeng.umsdk:analytics:8.0.0'
+    implementation 'com.umeng.umsdk:common:2.0.0'
+    /*极光推送*/
+    implementation 'cn.jiguang.sdk:jpush:3.3.4'
+    implementation 'cn.jiguang.sdk:jcore:2.1.2'
+}
+/*集成分享*/
+MobSDK {
+    appKey "2b7c184caf2fc"
+    appSecret "05ec71f32ff732e07f1a7c5adf20d72e"
+
+    ShareSDK {
+        gui false
+        //平台配置信息
+        devInfo {
+            Wechat {
+                id 1
+                sortId 1
+                appId "wx1386760df6c5f6a4"
+                appSecret "8d1b5e2b4e8b67a4ae4e973ca0cee7c9"
+            }
+            WechatMoments {
+                id 2
+                sortId 2
+                appId "wx1386760df6c5f6a4"
+                appSecret "8d1b5e2b4e8b67a4ae4e973ca0cee7c9"
+                bypassApproval false
+                enable true
+            }
+            QQ {
+                id 3
+                sortId 3
+                appId "1108015230"
+                appKey "HzgUB9jkELzEflKO"
+                shareByAppClient true
+                bypassApproval true
+                enable true
+            }
+            QZone {
+                id 4
+                sortId 4
+                appId "1108015230"
+                appKey "HzgUB9jkELzEflKO"
+                shareByAppClient false
+                bypassApproval true
+                enable true
+            }
+            SinaWeibo {
+                appKey "568898243"
+                appSecret "38a4f8204cc784f81f9f0daaf31e02e3"
+                callbackUri "http://www.sharesdk.cn"
+                shareByAppClient true
+                bypassApproval true
+            }
+        }
+    }
+}
