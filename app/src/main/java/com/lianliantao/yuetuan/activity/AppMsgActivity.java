@@ -1,6 +1,8 @@
 package com.lianliantao.yuetuan.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -32,6 +34,7 @@ public class AppMsgActivity extends BaseTitleActivity {
     private TabLayoutAdapter adapter;
     AppMsgFragment fragment;
     Bundle bundle;
+    private String type;
 
     @Override
     public int getContainerView() {
@@ -43,6 +46,8 @@ public class AppMsgActivity extends BaseTitleActivity {
         super.onCreate(savedInstanceState);
         ButterKnife.bind(this);
         setMiddleTitle("消息");
+        Intent intent = getIntent();
+        type = intent.getStringExtra("type");
         initView();
     }
 
@@ -58,7 +63,15 @@ public class AppMsgActivity extends BaseTitleActivity {
         adapter = new TabLayoutAdapter(fragments, getSupportFragmentManager());
         viewpager.setAdapter(adapter);
         tablayout.setupWithViewPager(viewpager);
-        viewpager.setCurrentItem(0);
+        if (!TextUtils.isEmpty(type)) {
+            if (type.equals("2")) {
+                viewpager.setCurrentItem(1);
+            } else {
+                viewpager.setCurrentItem(0);
+            }
+        } else {
+            viewpager.setCurrentItem(0);
+        }
         viewpager.setOffscreenPageLimit(fragments.size());
         viewpager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override

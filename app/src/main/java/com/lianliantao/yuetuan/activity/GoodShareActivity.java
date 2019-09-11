@@ -53,8 +53,10 @@ import com.lianliantao.yuetuan.myutil.MyBitmapUtil;
 import com.lianliantao.yuetuan.photo_dispose_util.ShareManager;
 import com.lianliantao.yuetuan.photo_dispose_util.Tools;
 import com.lianliantao.yuetuan.port_inner.OnItemClick;
+import com.lianliantao.yuetuan.share.OnekeyShare;
 import com.lianliantao.yuetuan.util.CommonUtil;
 import com.lianliantao.yuetuan.util.DensityUtils;
+import com.lianliantao.yuetuan.util.DialogUtil;
 import com.lianliantao.yuetuan.util.GsonUtil;
 import com.lianliantao.yuetuan.util.IconAndTextGroupUtil;
 import com.lianliantao.yuetuan.util.MoneyFormatUtil;
@@ -62,9 +64,14 @@ import com.lianliantao.yuetuan.util.NumUtil;
 import com.lianliantao.yuetuan.util.QRCodeUtil;
 import com.lianliantao.yuetuan.util.ToastUtils;
 import com.makeramen.roundedimageview.RoundedImageView;
+import com.tencent.connect.share.QzonePublish;
+import com.tencent.tauth.IUiListener;
+import com.tencent.tauth.Tencent;
+import com.tencent.tauth.UiError;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -72,6 +79,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -80,6 +88,9 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.sharesdk.framework.Platform;
+import cn.sharesdk.framework.PlatformActionListener;
+import cn.sharesdk.sina.weibo.SinaWeibo;
 
 public class GoodShareActivity extends BaseTitleActivity {
 
@@ -276,7 +287,7 @@ public class GoodShareActivity extends BaseTitleActivity {
         estimateMoney.setText("预估赚 ¥ " + estimatedEarn);
     }
 
-    @OnClick({R.id.copyTKL, R.id.wcaht_friend, R.id.wchat_circle, R.id.qq, R.id.qqZone, R.id.fzwb, R.id.bctp, R.id.qhsy})
+    @OnClick({R.id.copyTKL, R.id.wcaht_friend, R.id.wchat_circle, R.id.qq, R.id.qqZone, R.id.fzwb, R.id.bctp, R.id.qhsy, R.id.weibo})
     public void OnClick(View view) {
         switch (view.getId()) {
             case R.id.copyTKL:
@@ -313,7 +324,13 @@ public class GoodShareActivity extends BaseTitleActivity {
                 }
                 break;
             case R.id.qqZone:/*QQ空间分享*/
-
+                if (ContextCompat.checkSelfPermission(GoodShareActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                        || ContextCompat.checkSelfPermission(GoodShareActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    //没有存储权限
+                    ActivityCompat.requestPermissions(GoodShareActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 5);
+                } else {
+                    commonSelectImgFunction("QQZone");
+                }
                 break;
             case R.id.fzwb:/*复制文本*/
                 copyOfficial();
@@ -333,7 +350,15 @@ public class GoodShareActivity extends BaseTitleActivity {
                 startActivity(intent);
                 finish();
                 break;
-
+            case R.id.weibo:/*微博分享*/
+                if (ContextCompat.checkSelfPermission(GoodShareActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                        || ContextCompat.checkSelfPermission(GoodShareActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    //没有存储权限
+                    ActivityCompat.requestPermissions(GoodShareActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 6);
+                } else {
+                    commonSelectImgFunction("Weibo");
+                }
+                break;
         }
     }
 
@@ -377,6 +402,12 @@ public class GoodShareActivity extends BaseTitleActivity {
                 case "saveImages":
                     Glide.with(getApplicationContext()).load(selectedImagesList.get(0)).asBitmap().into(targetOfSaveImages);
                     break;
+                case "QQZone":
+                    Glide.with(getApplicationContext()).load(selectedImagesList.get(0)).asBitmap().into(targetOfQQZone);
+                    break;
+                case "Weibo":
+                    Glide.with(getApplicationContext()).load(selectedImagesList.get(0)).asBitmap().into(targetOfWeibo);
+                    break;
             }
 
         } else {
@@ -407,6 +438,24 @@ public class GoodShareActivity extends BaseTitleActivity {
         }
     }
 
+    /*微博*/
+    private SimpleTarget targetOfWeibo = new SimpleTarget<Bitmap>() {
+        @Override
+        public void onResourceReady(Bitmap bitmap, GlideAnimation glideAnimation) {
+            ivBig.setImageBitmap(bitmap);
+            viewSaveToImageOfWeibo(viewPoster);
+        }
+    };
+
+    /*qq空间分享*/
+    private SimpleTarget targetOfQQZone = new SimpleTarget<Bitmap>() {
+        @Override
+        public void onResourceReady(Bitmap bitmap, GlideAnimation glideAnimation) {
+            ivBig.setImageBitmap(bitmap);
+            viewSaveToImageOfQQZone(viewPoster);
+        }
+    };
+
     /*QQ好友的分享方法*/
     private SimpleTarget targetOfQQFriend = new SimpleTarget<Bitmap>() {
         @Override
@@ -415,6 +464,41 @@ public class GoodShareActivity extends BaseTitleActivity {
             viewSaveToImageOfQQFriend(viewPoster);
         }
     };
+
+    List<String> stringList;
+
+    /*发布图片到qq空间*/
+    private void viewSaveToImageOfQQZone(View viewPoster) {
+        loadingDialog = DialogUtil.createLoadingDialog(GoodShareActivity.this, "加载中...");
+        stringList = new ArrayList<>();
+        DisplayMetrics metric = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metric);
+        int width = metric.widthPixels;
+        int height = metric.heightPixels;
+        Bitmap hebingBitmap = MyBitmapUtil.createBitmapOfNew(getApplicationContext(), viewPoster, width, height);
+        File file_one = CommonUtil.saveFile(hebingBitmap, getApplicationContext());
+        String absolutePath = file_one.getAbsolutePath();
+        Log.i("图片路劲", absolutePath);
+        stringList.add(absolutePath);
+        entryQQZone();
+    }
+
+    List<String> weibolist;
+
+    /*发布图片到微博*/
+    private void viewSaveToImageOfWeibo(View viewPoster) {
+        loadingDialog = DialogUtil.createLoadingDialog(GoodShareActivity.this, "加载中...");
+        weibolist = new ArrayList<>();
+        DisplayMetrics metric = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metric);
+        int width = metric.widthPixels;
+        int height = metric.heightPixels;
+        Bitmap hebingBitmap = MyBitmapUtil.createBitmapOfNew(getApplicationContext(), viewPoster, width, height);
+        File file_one = CommonUtil.saveFile(hebingBitmap, getApplicationContext());
+        String absolutePath = file_one.getAbsolutePath();
+        weibolist.add(absolutePath);
+        entryWeibo();
+    }
 
     private void viewSaveToImageOfQQFriend(View viewPoster) {
         DisplayMetrics metric = new DisplayMetrics();
@@ -600,6 +684,186 @@ public class GoodShareActivity extends BaseTitleActivity {
         }
     };
 
+    /*唤起qq空间代码*/
+    private void entryQQZone() {
+        if (selectedImagesList.size() == 1) {
+            DialogUtil.closeDialog(loadingDialog, GoodShareActivity.this);
+            /*上传图片到qq自带的空间*/
+            Tencent tencent = Tencent.createInstance("1108015230", getApplicationContext());
+            Bundle params = new Bundle();
+            params.putInt(QzonePublish.PUBLISH_TO_QZONE_KEY_TYPE, QzonePublish.PUBLISH_TO_QZONE_TYPE_PUBLISHMOOD);
+            params.putString(QzonePublish.PUBLISH_TO_QZONE_SUMMARY, "");
+            params.putStringArrayList(QzonePublish.PUBLISH_TO_QZONE_IMAGE_URL, (ArrayList<String>) stringList);// 图片地址ArrayList
+            tencent.publishToQzone(this, params, new IUiListener() {
+                @Override
+                public void onComplete(Object o) {
+                }
+
+                @Override
+                public void onError(UiError uiError) {
+                }
+
+                @Override
+                public void onCancel() {
+                }
+            });
+        } else {
+            saveMorePhotoToLocal2();
+        }
+    }
+
+    /*批量下载图片*/     /*网络路劲存储*/
+    private void saveMorePhotoToLocal2() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                URL imageurl;
+                try {
+                    for (int i = 1; i < selectedImagesList.size(); i++) {
+                        imageurl = new URL(selectedImagesList.get(i));
+                        HttpURLConnection conn = (HttpURLConnection) imageurl.openConnection();
+                        conn.setDoInput(true);
+                        conn.connect();
+                        InputStream is = conn.getInputStream();
+                        Bitmap bitmap = BitmapFactory.decodeStream(is);
+                        is.close();
+                        Message msg = new Message();
+                        // 把bm存入消息中,发送到主线程
+                        msg.obj = bitmap;
+                        handler2.sendMessage(msg);
+                    }
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    @SuppressLint("HandlerLeak")
+    Handler handler2 = new Handler() {
+        public void handleMessage(Message msg) {
+            Bitmap bitmap = (Bitmap) msg.obj;
+            File file_one = CommonUtil.saveFile(bitmap, getApplicationContext());
+            String absolutePath = file_one.getAbsolutePath();
+            stringList.add(absolutePath);
+            if (stringList.size() == selectedImagesList.size()) {
+                DialogUtil.closeDialog(loadingDialog, GoodShareActivity.this);
+                /*上传图片到qq自带的空间*/
+                Tencent tencent = Tencent.createInstance("1108015230", getApplicationContext());
+                Bundle params = new Bundle();
+                params.putInt(QzonePublish.PUBLISH_TO_QZONE_KEY_TYPE, QzonePublish.PUBLISH_TO_QZONE_TYPE_PUBLISHMOOD);
+                params.putString(QzonePublish.PUBLISH_TO_QZONE_SUMMARY, "");
+                params.putStringArrayList(QzonePublish.PUBLISH_TO_QZONE_IMAGE_URL, (ArrayList<String>) stringList);// 图片地址ArrayList
+                tencent.publishToQzone(GoodShareActivity.this, params, new IUiListener() {
+                    @Override
+                    public void onComplete(Object o) {
+
+                    }
+
+                    @Override
+                    public void onError(UiError uiError) {
+                    }
+
+                    @Override
+                    public void onCancel() {
+                    }
+                });
+            }
+        }
+    };
+
+    /*进入微博*/
+    private void entryWeibo() {
+        if (selectedImagesList.size() == 1) {
+            DialogUtil.closeDialog(loadingDialog, GoodShareActivity.this);
+            OnekeyShare oks = new OnekeyShare();
+            oks.disableSSOWhenAuthorize();
+            oks.setPlatform(SinaWeibo.NAME);
+            oks.setImagePath(weibolist.get(0));
+            oks.setSilent(true);
+            oks.setText(ed_input_content.getText().toString());
+            oks.setCallback(new PlatformActionListener() {
+                @Override
+                public void onComplete(Platform platform, int i, HashMap<String, Object> hashMap) {
+                }
+
+                @Override
+                public void onError(Platform platform, int i, Throwable throwable) {
+                }
+
+                @Override
+                public void onCancel(Platform platform, int i) {
+                }
+            });
+            oks.show(this);
+        } else {
+            saveMorePhotoToLocal3();
+        }
+    }
+
+    private void saveMorePhotoToLocal3() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                URL imageurl;
+                try {
+                    for (int i = 1; i < selectedImagesList.size(); i++) {
+                        imageurl = new URL(selectedImagesList.get(i));
+                        HttpURLConnection conn = (HttpURLConnection) imageurl.openConnection();
+                        conn.setDoInput(true);
+                        conn.connect();
+                        InputStream is = conn.getInputStream();
+                        Bitmap bitmap = BitmapFactory.decodeStream(is);
+                        is.close();
+                        Message msg = new Message();
+                        // 把bm存入消息中,发送到主线程
+                        msg.obj = bitmap;
+                        handler3.sendMessage(msg);
+                    }
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    @SuppressLint("HandlerLeak")
+    Handler handler3 = new Handler() {
+        public void handleMessage(Message msg) {
+            Bitmap bitmap = (Bitmap) msg.obj;
+            File file_one = CommonUtil.saveFile(bitmap, getApplicationContext());
+            String absolutePath = file_one.getAbsolutePath();
+            weibolist.add(absolutePath);
+            if (weibolist.size() == selectedImagesList.size()) {
+                DialogUtil.closeDialog(loadingDialog, GoodShareActivity.this);
+                OnekeyShare oks = new OnekeyShare();
+                oks.disableSSOWhenAuthorize();
+                oks.setPlatform(SinaWeibo.NAME);
+                oks.setImageArray(weibolist.toArray(new String[weibolist.size()]));
+                oks.setSilent(true);
+                oks.setText(ed_input_content.getText().toString());
+                oks.setCallback(new PlatformActionListener() {
+                    @Override
+                    public void onComplete(Platform platform, int i, HashMap<String, Object> hashMap) {
+                    }
+
+                    @Override
+                    public void onError(Platform platform, int i, Throwable throwable) {
+                    }
+
+                    @Override
+                    public void onCancel(Platform platform, int i) {
+                    }
+                });
+                oks.show(GoodShareActivity.this);
+            }
+        }
+    };
+
     /*存储权限回调*/
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -646,6 +910,28 @@ public class GoodShareActivity extends BaseTitleActivity {
                     return;
                 } else if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults.length > 1 && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                     commonSelectImgFunction("QQFriend");
+                }
+                break;
+            case 5:
+                if (grantResults.length == 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    ToastUtils.showToast(getApplicationContext(), "需要打开存储权限，请前往设置-应用-麻花优选-权限进行设置");
+                    return;
+                } else if (grantResults.length <= 1 || grantResults[1] != PackageManager.PERMISSION_GRANTED) {
+                    ToastUtils.showToast(getApplicationContext(), "需要打开存储权限，请前往设置-应用-麻花优选-权限进行设置");
+                    return;
+                } else if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults.length > 1 && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    commonSelectImgFunction("QQZone");
+                }
+                break;
+            case 6:
+                if (grantResults.length == 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    ToastUtils.showToast(getApplicationContext(), "需要打开存储权限，请前往设置-应用-麻花优选-权限进行设置");
+                    return;
+                } else if (grantResults.length <= 1 || grantResults[1] != PackageManager.PERMISSION_GRANTED) {
+                    ToastUtils.showToast(getApplicationContext(), "需要打开存储权限，请前往设置-应用-麻花优选-权限进行设置");
+                    return;
+                } else if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults.length > 1 && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    commonSelectImgFunction("Weibo");
                 }
                 break;
         }

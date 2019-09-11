@@ -46,6 +46,7 @@ import java.util.LinkedHashMap;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.jpush.android.api.JPushInterface;
 
 public class SettingActivity extends BaseTitleActivity {
     @BindView(R.id.switch_one)
@@ -318,7 +319,7 @@ public class SettingActivity extends BaseTitleActivity {
     private void taobaoLogin() {
         alibcLogin.showLogin(new AlibcLoginCallback() {
             @Override
-            public void onSuccess(int i) {
+            public void onSuccess(int i, String s, String s1) {
                 Session session = alibcLogin.getSession();
                 nick = session.nick;/*淘宝昵称*/
                 avatarUrl = session.avatarUrl;/*淘宝头像*/
@@ -354,6 +355,7 @@ public class SettingActivity extends BaseTitleActivity {
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
+                JPushInterface.setAlias(getApplicationContext(), 0, "");
                 PreferUtils.putBoolean(getApplicationContext(), CommonApi.ISLOGIN, false);
                 PreferUtils.putString(getApplicationContext(), "uId", "");
                 intent = new Intent(getApplicationContext(), MainActivity.class);

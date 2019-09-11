@@ -1,8 +1,11 @@
 package com.lianliantao.yuetuan.activity;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -24,6 +27,7 @@ import com.lianliantao.yuetuan.common_manager.CommonParamUtil;
 import com.lianliantao.yuetuan.constant.CommonApi;
 import com.lianliantao.yuetuan.myokhttputils.response.JsonResponseHandler;
 import com.lianliantao.yuetuan.myutil.JumpUtil;
+import com.lianliantao.yuetuan.myutil.PhoneTopStyleUtil;
 import com.lianliantao.yuetuan.port_inner.OnItemClick;
 import com.lianliantao.yuetuan.util.GsonUtil;
 import com.lianliantao.yuetuan.util.ToastUtils;
@@ -42,6 +46,8 @@ import butterknife.OnClick;
 
 public class SearchResultActivity extends OriginalActivity {
     String keyword;
+    @BindView(R.id.viewHight)
+    View viewHight;
     @BindView(R.id.re_search)
     RelativeLayout re_search;
     @BindView(R.id.iv_back)
@@ -78,11 +84,29 @@ public class SearchResultActivity extends OriginalActivity {
     private String sort = "";/*排序字段*/
     private boolean priceDown = false;/*价格字段*/
 
+    private void setAndroidNativeLightStatusBar(boolean dark) {
+        View decor = getWindow().getDecorView();
+        if (dark) {
+            decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        } else {
+            decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+        }
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        int statusBarHeight = PhoneTopStyleUtil.getStatusBarHeight(getApplicationContext());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.setStatusBarColor(Color.WHITE);
+        }
+        setAndroidNativeLightStatusBar(true);
         setContentView(R.layout.searchresultactivity);
         ButterKnife.bind(this);
+        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) viewHight.getLayoutParams();
+        layoutParams.height = statusBarHeight;
+        viewHight.setLayoutParams(layoutParams);
         intent = getIntent();
         keyword = intent.getStringExtra("keyword");
         tvSearchName.setText(keyword);

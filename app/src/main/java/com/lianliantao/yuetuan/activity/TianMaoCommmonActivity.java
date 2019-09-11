@@ -26,8 +26,6 @@ import com.alibaba.baichuan.android.trade.AlibcTrade;
 import com.alibaba.baichuan.android.trade.callback.AlibcTradeCallback;
 import com.alibaba.baichuan.android.trade.model.AlibcShowParams;
 import com.alibaba.baichuan.android.trade.model.OpenType;
-import com.alibaba.baichuan.android.trade.page.AlibcBasePage;
-import com.alibaba.baichuan.android.trade.page.AlibcPage;
 import com.alibaba.baichuan.trade.biz.context.AlibcTradeResult;
 import com.lianliantao.yuetuan.R;
 import com.lianliantao.yuetuan.app_manage.MyApplication;
@@ -172,7 +170,30 @@ public class TianMaoCommmonActivity extends OriginalActivity {
             }
 
         });
-        webview.loadUrl(url);
+//        webview.loadUrl(url);
+        openByUrl();
+    }
+
+    private void openByUrl() {
+        AlibcShowParams showParams = new AlibcShowParams();
+        showParams.setOpenType(OpenType.Native);
+        showParams.setBackUrl("alisdk://");
+//        showParams.setNativeOpenFailedMode(AlibcFailModeType.AlibcNativeFailModeJumpH5);
+//        AlibcTaokeParams taokeParams = new AlibcTaokeParams("", "", "");
+//        taokeParams.setPid("mm_112883640_11584347_72287650277");
+//        taokeParams.setAdzoneid("29932014");
+//        Map<String, String> trackParams = new HashMap<>();
+        AlibcTrade.openByUrl(TianMaoCommmonActivity.this, "", url, webview,
+                new WebViewClient(), new WebChromeClient(),
+                showParams, null, null, new AlibcTradeCallback() {
+                    @Override
+                    public void onTradeSuccess(AlibcTradeResult tradeResult) {
+                    }
+
+                    @Override
+                    public void onFailure(int code, String msg) {
+                    }
+                });
     }
 
     @OnClick({R.id.ivBack, R.id.tvClose, R.id.ivRight, R.id.ll_yijian_view, R.id.reShare, R.id.reBuy})
@@ -218,22 +239,24 @@ public class TianMaoCommmonActivity extends OriginalActivity {
     }
 
     private void goToTaoBao() {
-        alibcShowParams = new AlibcShowParams(OpenType.Native, true);
-        AlibcBasePage page = new AlibcPage(couponClickUrl);
+        alibcShowParams = new AlibcShowParams();
+        alibcShowParams.setOpenType(OpenType.Native);
+        alibcShowParams.setBackUrl("alisdk://");
         HashMap<String, String> exParams = new HashMap<>();
         exParams.put("isv_code", "appisvcode");
         exParams.put("alibaba", "阿里巴巴");
-        AlibcTrade.show(TianMaoCommmonActivity.this, page, alibcShowParams, null, exParams, new AlibcTradeCallback() {
-            @Override
-            public void onTradeSuccess(AlibcTradeResult alibcTradeResult) {
-                /*阿里百川进淘宝成功*/
-            }
+        // 以显示传入url的方式打开页面（第二个参数是套件名称 暂时传“”）
+        AlibcTrade.openByUrl(TianMaoCommmonActivity.this, "", couponClickUrl, null,
+                new WebViewClient(), new WebChromeClient(), alibcShowParams,
+                null, exParams, new AlibcTradeCallback() {
+                    @Override
+                    public void onTradeSuccess(AlibcTradeResult tradeResult) {
+                    }
 
-            @Override
-            public void onFailure(int i, String s) {
-                /*阿里百川进淘宝失败*/
-            }
-        });
+                    @Override
+                    public void onFailure(int code, String msg) {
+                    }
+                });
     }
 
     private void getGoodDetailData() {

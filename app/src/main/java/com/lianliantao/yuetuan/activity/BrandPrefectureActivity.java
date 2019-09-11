@@ -12,9 +12,6 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ali.auth.third.core.model.Session;
-import com.alibaba.baichuan.trade.biz.login.AlibcLogin;
-import com.alibaba.baichuan.trade.biz.login.AlibcLoginCallback;
 import com.bumptech.glide.Glide;
 import com.lianliantao.yuetuan.R;
 import com.lianliantao.yuetuan.adapter.BrandPrefectureAdapter;
@@ -23,14 +20,12 @@ import com.lianliantao.yuetuan.base_activity.OriginalActivity;
 import com.lianliantao.yuetuan.bean.SearchListBean;
 import com.lianliantao.yuetuan.common_manager.CommonParamUtil;
 import com.lianliantao.yuetuan.constant.CommonApi;
-import com.lianliantao.yuetuan.dianpu.MyShopActivity;
+import com.lianliantao.yuetuan.dianpu.CheckUserBeian2ShopManager;
 import com.lianliantao.yuetuan.myokhttputils.response.JsonResponseHandler;
 import com.lianliantao.yuetuan.myutil.JumpUtil;
 import com.lianliantao.yuetuan.myutil.PhoneTopStyleUtil;
 import com.lianliantao.yuetuan.port_inner.OnItemClick;
 import com.lianliantao.yuetuan.util.GsonUtil;
-import com.lianliantao.yuetuan.util.ParamUtil;
-import com.lianliantao.yuetuan.util.PreferUtils;
 import com.lianliantao.yuetuan.util.StatusBarUtils;
 import com.lianliantao.yuetuan.util.ToastUtils;
 import com.makeramen.roundedimageview.RoundedImageView;
@@ -90,15 +85,9 @@ public class BrandPrefectureActivity extends OriginalActivity {
     public void OnClick(View view) {
         switch (view.getId()) {
             case R.id.entryShop:
-                String hasBindTbk = PreferUtils.getString(getApplicationContext(), "hasBindTbk");
-                if (hasBindTbk.equals("true")) {
-                    Intent intent = new Intent(getApplicationContext(), MyShopActivity.class);
-                    intent.putExtra("shopId", shopId);
-                    intent.putExtra("shopTitle", brandName);
-                    startActivity(intent);
-                } else {
-                    taobaoBeiAn();
-                }
+                /*店铺链接跳转*/
+                CheckUserBeian2ShopManager manager = new CheckUserBeian2ShopManager(getApplicationContext(), shopId, this);
+                manager.check();
                 break;
             case R.id.back:
                 finish();
@@ -139,27 +128,6 @@ public class BrandPrefectureActivity extends OriginalActivity {
                         ToastUtils.showToast(getApplicationContext(), CommonApi.ERROR_NET_MSG);
                     }
                 });
-    }
-
-    /*淘宝渠道备案*/
-    private void taobaoBeiAn() {
-        AlibcLogin alibcLogin = AlibcLogin.getInstance();
-        alibcLogin.showLogin(new AlibcLoginCallback() {
-            @Override
-            public void onSuccess(int i) {
-                Session session = alibcLogin.getSession();
-                String nick = session.nick;/*淘宝昵称*/
-                String avatarUrl = session.avatarUrl;/*淘宝头像*/
-                Intent intent = new Intent(getApplicationContext(), TaoBaoAuthActivity.class);
-                intent.putExtra("nick", nick);
-                intent.putExtra("avatarUrl", avatarUrl);
-                startActivity(intent);
-            }
-
-            @Override
-            public void onFailure(int i, String s) {
-            }
-        });
     }
 
 }

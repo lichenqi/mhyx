@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.webkit.SslErrorHandler;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -34,8 +35,6 @@ import com.alibaba.baichuan.android.trade.AlibcTrade;
 import com.alibaba.baichuan.android.trade.callback.AlibcTradeCallback;
 import com.alibaba.baichuan.android.trade.model.AlibcShowParams;
 import com.alibaba.baichuan.android.trade.model.OpenType;
-import com.alibaba.baichuan.android.trade.page.AlibcBasePage;
-import com.alibaba.baichuan.android.trade.page.AlibcPage;
 import com.alibaba.baichuan.trade.biz.context.AlibcTradeResult;
 import com.alibaba.baichuan.trade.biz.login.AlibcLogin;
 import com.alibaba.baichuan.trade.biz.login.AlibcLoginCallback;
@@ -62,7 +61,7 @@ import com.lianliantao.yuetuan.dialogfragment.BaseNiceDialog;
 import com.lianliantao.yuetuan.dialogfragment.NiceDialog;
 import com.lianliantao.yuetuan.dialogfragment.ViewConvertListener;
 import com.lianliantao.yuetuan.dialogfragment.ViewHolder;
-import com.lianliantao.yuetuan.dianpu.MyShopActivity;
+import com.lianliantao.yuetuan.dianpu.ShopLinkBean;
 import com.lianliantao.yuetuan.itemdecoration.CainiXiHuanItem;
 import com.lianliantao.yuetuan.itemdecoration.XiangGuangTuiJianItem;
 import com.lianliantao.yuetuan.myokhttputils.response.JsonResponseHandler;
@@ -75,7 +74,6 @@ import com.lianliantao.yuetuan.util.GsonUtil;
 import com.lianliantao.yuetuan.util.IconAndTextGroupUtil;
 import com.lianliantao.yuetuan.util.MoneyFormatUtil;
 import com.lianliantao.yuetuan.util.NumUtil;
-import com.lianliantao.yuetuan.util.PreferUtils;
 import com.lianliantao.yuetuan.util.StatusBarUtils;
 import com.lianliantao.yuetuan.util.ToastUtils;
 import com.lianliantao.yuetuan.view.RoundBannerLoader;
@@ -224,6 +222,8 @@ public class ShopDetailActivity extends OriginalActivity {
     LinearLayout llTypeface;
     @BindView(R.id.shangPingxiangqing)
     TextView shangPingxiangqing;
+    @BindView(R.id.relijishengji)
+    RelativeLayout relijishengji;
     private String itemId;
     ShopDeailBean.GoodsDetailBean goodsDetail;
     GoodsDecribeBean goodsDecribeBean;
@@ -233,7 +233,6 @@ public class ShopDetailActivity extends OriginalActivity {
     int statusBarHeight;
     private AlibcShowParams alibcShowParams;//页面打开方式，默认，H5，Native
     String couponClickUrl;
-    private String hasBindTbk;/*淘宝渠道备案标识*/
     private String evaluateUrl;/*查看全部链接*/
     private int fiftyHeight;
 
@@ -257,7 +256,9 @@ public class ShopDetailActivity extends OriginalActivity {
         banner.setLayoutParams(layoutParamsBanner);
         intent = getIntent();
         itemId = intent.getStringExtra("itemId");
-        alibcShowParams = new AlibcShowParams(OpenType.Native, true);
+        alibcShowParams = new AlibcShowParams();
+        alibcShowParams.setOpenType(OpenType.Native);
+        alibcShowParams.setBackUrl("alisdk://");
         fiftyHeight = DensityUtils.dip2px(getApplicationContext(), 50);
         getShopDetailData();/*商品详情信息接口*/
         initRecyclerviewRecommendView();
@@ -326,7 +327,6 @@ public class ShopDetailActivity extends OriginalActivity {
         settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         webview.setWebViewClient(new WebViewClient() {
 
-
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 return super.shouldOverrideUrlLoading(view, url);
@@ -340,53 +340,10 @@ public class ShopDetailActivity extends OriginalActivity {
 
             @Override
             public void onPageFinished(WebView view, String url) {
-                imgReset();
                 super.onPageFinished(view, url);
             }
 
         });
-    }
-
-    private void loadJS() {
-        webview.loadUrl("javascript:(function(){"
-                + "var divs = document.getElementsByTagName(\"div\");"
-                + "for(var j=0;j<divs.length;j++)"
-                + "{"
-                + "divs[j].style.margin=\"0px\";"
-                + "divs[j].style.padding=\"0px\";"
-                + "divs[j].style.width=document.body.clientWidth-10;"
-                + "}"
-                + "var imgs = document.getElementsByTagName(\"img\"); "
-                + "for(var i=0;i<imgs.lenght;i++)"
-                + "{"
-                + "var vkeyWords=/.gif$/;"
-                + "if(!vkeyWords.test(imgs[i].src)){"
-                + "var hRatio=" + getScreenWidthPX() + "/objs[i].width;"
-                + "objs[i].height= objs[i].height*hRatio;"//通过缩放比例来设置图片的高度
-                + "objs[i].width=" + getScreenWidthPX() + ";"//设置图片的宽度
-                + "}"
-                + "}"
-                + "})()");
-    }
-
-    private int getScreenWidthPX() {
-        int widthPixels = getResources().getDisplayMetrics().widthPixels;
-        return widthPixels;
-    }
-
-    /**
-     * 对图片进行重置大小，宽度就是手机屏幕宽度，高度根据宽度比便自动缩放
-     **/
-    private void imgReset() {
-        webview.loadUrl("javascript:(function(){" +
-                "alert(1);" +
-                "var objs = document.getElementsByTagName('img'); " +
-                "for(var i=0;i<objs.length;i++) " +
-                "{"
-                + "var img = objs[i]; " +
-                " img.setAttribute.width = '375'; img.setAttribute.height = '500'; " +
-                "}" +
-                "})()");
     }
 
     private void goodTitleCopy() {
@@ -409,7 +366,6 @@ public class ShopDetailActivity extends OriginalActivity {
         nestedscrollview.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                Log.i("滑动", scrollY + "    商品详情位置处  " + shangPingxiangqing.getTop() + "   猜你喜欢位置处  " + tvLikeWenBen.getTop());
                 if (scrollY <= 0) {
                     reTitleChange.setVisibility(View.VISIBLE);
                     viewHeight.setBackgroundColor(Color.argb((int) 0, 0, 0, 0));
@@ -434,22 +390,20 @@ public class ShopDetailActivity extends OriginalActivity {
                     // 只是layout背景透明
                     viewHeight.setBackgroundColor(Color.argb((int) alpha, 0, 0, 0));
                     reSonParent.setBackgroundColor(Color.argb((int) alpha, 255, 255, 255));
-                } else if (scrollY > 600) {
+                } else if (scrollY > 600 && scrollY <= shangPingxiangqing.getTop() - fiftyHeight) {
                     viewHeight.setBackgroundColor(Color.argb((int) 255, 0, 0, 0));
                     reSonParent.setBackgroundColor(Color.argb((int) 255, 255, 255, 255));
                     reTitleChange.setVisibility(View.GONE);
                     ivBack.setVisibility(View.VISIBLE);
                     llTypeface.setVisibility(View.VISIBLE);
                     ivLikeList.setVisibility(View.VISIBLE);
-                } else if (scrollY >= shangPingxiangqing.getTop() - fiftyHeight) {/*滑动到商品详情处*/
-
+                } else if (scrollY >= shangPingxiangqing.getTop() - fiftyHeight && scrollY <= tvLikeWenBen.getTop() - fiftyHeight) {/*滑动到商品详情处*/
                     viewHeight.setBackgroundColor(Color.argb((int) 255, 0, 0, 0));
                     reSonParent.setBackgroundColor(Color.argb((int) 255, 255, 255, 255));
                     reTitleChange.setVisibility(View.GONE);
                     ivBack.setVisibility(View.VISIBLE);
                     llTypeface.setVisibility(View.VISIBLE);
                     ivLikeList.setVisibility(View.VISIBLE);
-
                     shangPing.setTextColor(0xff585858);
                     shangPingLine.setVisibility(View.INVISIBLE);
                     xiangqing.setTextColor(0xffFC5203);
@@ -457,37 +411,19 @@ public class ShopDetailActivity extends OriginalActivity {
                     tuijian.setTextColor(0xff585858);
                     tuijianLine.setVisibility(View.INVISIBLE);
                 } else if (scrollY >= tvLikeWenBen.getTop() - fiftyHeight) {/*滑动到猜你喜欢处*/
-
                     viewHeight.setBackgroundColor(Color.argb((int) 255, 0, 0, 0));
                     reSonParent.setBackgroundColor(Color.argb((int) 255, 255, 255, 255));
                     reTitleChange.setVisibility(View.GONE);
                     ivBack.setVisibility(View.VISIBLE);
                     llTypeface.setVisibility(View.VISIBLE);
                     ivLikeList.setVisibility(View.VISIBLE);
-
                     shangPing.setTextColor(0xff585858);
                     shangPingLine.setVisibility(View.INVISIBLE);
                     xiangqing.setTextColor(0xff585858);
                     xiangqingLine.setVisibility(View.INVISIBLE);
                     tuijian.setTextColor(0xffFC5203);
                     tuijianLine.setVisibility(View.VISIBLE);
-                } else if (scrollY < shangPingxiangqing.getTop() - fiftyHeight) {
-
-                    viewHeight.setBackgroundColor(Color.argb((int) 255, 0, 0, 0));
-                    reSonParent.setBackgroundColor(Color.argb((int) 255, 255, 255, 255));
-                    reTitleChange.setVisibility(View.GONE);
-                    ivBack.setVisibility(View.VISIBLE);
-                    llTypeface.setVisibility(View.VISIBLE);
-                    ivLikeList.setVisibility(View.VISIBLE);
-
-                    shangPing.setTextColor(0xffFC5203);
-                    shangPingLine.setVisibility(View.VISIBLE);
-                    xiangqing.setTextColor(0xff585858);
-                    xiangqingLine.setVisibility(View.INVISIBLE);
-                    tuijian.setTextColor(0xff585858);
-                    tuijianLine.setVisibility(View.INVISIBLE);
                 }
-
                 /*一键置顶按钮*/
                 if (scrollY > 1300) {
                     ivToTop.setVisibility(View.VISIBLE);
@@ -538,7 +474,7 @@ public class ShopDetailActivity extends OriginalActivity {
                 xiangqingLine.setVisibility(View.INVISIBLE);
                 tuijian.setTextColor(0xffFC5203);
                 tuijianLine.setVisibility(View.VISIBLE);
-                nestedscrollview.scrollTo(0, webview.getBottom() - DensityUtils.dip2px(getApplication(), 40) - statusBarHeight);
+                nestedscrollview.scrollTo(0, tvLikeWenBen.getBottom() - statusBarHeight - DensityUtils.dip2px(getApplicationContext(), 40));
                 break;
             case R.id.ivBack:
                 finish();
@@ -567,8 +503,7 @@ public class ShopDetailActivity extends OriginalActivity {
                 finish();
                 break;
             case R.id.immediatelyGet:/*立即领取*/
-                hasBindTbk = PreferUtils.getString(getApplicationContext(), "hasBindTbk");
-                if (hasBindTbk.equals("true")) {
+                if (!TextUtils.isEmpty(couponClickUrl)) {
                     initAliPageData();
                 } else {
                     /*未备案*/
@@ -580,8 +515,7 @@ public class ShopDetailActivity extends OriginalActivity {
                     ToastUtils.showToast(getApplicationContext(), "商品信息获取中");
                     return;
                 }
-                hasBindTbk = PreferUtils.getString(getApplicationContext(), "hasBindTbk");
-                if (hasBindTbk.equals("true")) {/*已备案*/
+                if (!TextUtils.isEmpty(couponClickUrl)) {/*已备案*/
                     intent = new Intent(getApplicationContext(), GoodShareActivity.class);
                     intent.putExtra("itemId", itemId);/*商品id*/
                     intent.putExtra("imagesList", goodsDetail.getSmallImages());
@@ -600,8 +534,7 @@ public class ShopDetailActivity extends OriginalActivity {
                 }
                 break;
             case R.id.llBuySheng:/*购买省*/
-                hasBindTbk = PreferUtils.getString(getApplicationContext(), "hasBindTbk");
-                if (hasBindTbk.equals("true")) {
+                if (!TextUtils.isEmpty(couponClickUrl)) {
                     initAliPageData();
                 } else {
                     /*未备案*/
@@ -614,15 +547,7 @@ public class ShopDetailActivity extends OriginalActivity {
                 startActivity(intent);
                 break;
             case R.id.entryShop:/*进店逛逛*/
-                hasBindTbk = PreferUtils.getString(getApplicationContext(), "hasBindTbk");
-                if (hasBindTbk.equals("true")) {
-                    intent = new Intent(getApplicationContext(), MyShopActivity.class);
-                    intent.putExtra("shopId", goodsDecribeBean.getShopId());
-                    intent.putExtra("shopTitle", goodsDetail.getShopTitle());
-                    startActivity(intent);
-                } else {
-                    taobaoBeiAn(500);
-                }
+                getShopLink();
                 break;
         }
     }
@@ -634,7 +559,7 @@ public class ShopDetailActivity extends OriginalActivity {
         AlibcLogin alibcLogin = AlibcLogin.getInstance();
         alibcLogin.showLogin(new AlibcLoginCallback() {
             @Override
-            public void onSuccess(int i) {
+            public void onSuccess(int i, String s, String s1) {
                 Session session = alibcLogin.getSession();
                 String nick = session.nick;/*淘宝昵称*/
                 String avatarUrl = session.avatarUrl;/*淘宝头像*/
@@ -667,21 +592,21 @@ public class ShopDetailActivity extends OriginalActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        AlibcBasePage page = new AlibcPage(couponClickUrl);
                         HashMap<String, String> exParams = new HashMap<>();
                         exParams.put("isv_code", "appisvcode");
                         exParams.put("alibaba", "阿里巴巴");
-                        AlibcTrade.show(ShopDetailActivity.this, page, alibcShowParams, null, exParams, new AlibcTradeCallback() {
-                            @Override
-                            public void onTradeSuccess(AlibcTradeResult alibcTradeResult) {
-                                /*阿里百川进淘宝成功*/
-                            }
+                        // 以显示传入url的方式打开页面（第二个参数是套件名称 暂时传“”）
+                        AlibcTrade.openByUrl(ShopDetailActivity.this, "", couponClickUrl, null,
+                                new WebViewClient(), new WebChromeClient(), alibcShowParams,
+                                null, exParams, new AlibcTradeCallback() {
+                                    @Override
+                                    public void onTradeSuccess(AlibcTradeResult tradeResult) {
+                                    }
 
-                            @Override
-                            public void onFailure(int i, String s) {
-                                /*阿里百川进淘宝失败*/
-                            }
-                        });
+                                    @Override
+                                    public void onFailure(int code, String msg) {
+                                    }
+                                });
                     }
                 }, 2000);
             }
@@ -729,7 +654,13 @@ public class ShopDetailActivity extends OriginalActivity {
                             setShopViewData();/*店铺信息*/
                             setCouponData();/*优惠券信息*/
                             shareAndBuyData();/*分享赚和购买省*/
-                            tvUpgradeContent.setText(goodsDetail.getUpgradeEarnInfo());
+                            String upgradeEarnInfo = goodsDetail.getUpgradeEarnInfo();
+                            if (TextUtils.isEmpty(upgradeEarnInfo)) {
+                                relijishengji.setVisibility(View.GONE);
+                            } else {
+                                relijishengji.setVisibility(View.VISIBLE);
+                                tvUpgradeContent.setText(upgradeEarnInfo);
+                            }
                         } else {
                             ToastUtils.showToast(getApplicationContext(), CommonApi.ERROR_NET_MSG);
 
@@ -802,11 +733,6 @@ public class ShopDetailActivity extends OriginalActivity {
                             String itemInfoUrl = goodsDecribeBean.getItemInfoUrl();  /*商品图片链接*/
                             evaluateUrl = goodsDecribeBean.getEvaluateUrl();
                             webview.loadUrl(itemInfoUrl);
-                            if (TextUtils.isEmpty(goodsDecribeBean.getShopId())) {
-                                entryShop.setVisibility(View.GONE);
-                            } else {
-                                entryShop.setVisibility(View.VISIBLE);
-                            }
                         }
                     }
 
@@ -1114,6 +1040,50 @@ public class ShopDetailActivity extends OriginalActivity {
                         }
                     });
         }
+    }
+
+    /*请求店铺链接*/
+    private void getShopLink() {
+        LinkedHashMap<String, String> map = new LinkedHashMap<>();
+        map.put("sellerId", goodsDetail.getSellerId());
+        String commonParamSign = CommonParamUtil.getOtherParamSign(getApplicationContext(), map);
+        MyApplication.getInstance().getMyOkHttp().post()
+                .url(CommonApi.BASEURL + CommonApi.GOOD_SHOP_LINK + commonParamSign)
+                .enqueue(new JsonResponseHandler() {
+
+                    @Override
+                    public void onSuccess(int statusCode, JSONObject response) {
+                        super.onSuccess(statusCode, response);
+                        ShopLinkBean bean = GsonUtil.GsonToBean(response.toString(), ShopLinkBean.class);
+                        if (bean.getErrno() == CommonApi.RESULTCODEOK) {/*代表已备案*/
+                            String link = bean.getLink();
+                            HashMap<String, String> exParams = new HashMap<>();
+                            exParams.put("isv_code", "appisvcode");
+                            exParams.put("alibaba", "阿里巴巴");
+                            // 以显示传入url的方式打开页面（第二个参数是套件名称 暂时传“”）
+                            AlibcTrade.openByUrl(ShopDetailActivity.this, "", link, null,
+                                    new WebViewClient(), new WebChromeClient(), alibcShowParams,
+                                    null, exParams, new AlibcTradeCallback() {
+                                        @Override
+                                        public void onTradeSuccess(AlibcTradeResult tradeResult) {
+                                        }
+
+                                        @Override
+                                        public void onFailure(int code, String msg) {
+                                        }
+                                    });
+                        } else if (bean.getErrno() == 434) {/*用户淘宝未备案*/
+                            taobaoBeiAn(600);
+                        } else {
+                            ToastUtils.showToast(getApplicationContext(), bean.getUsermsg());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, String error_msg) {
+                        ToastUtils.showToast(getApplicationContext(), CommonApi.ERROR_NET_MSG);
+                    }
+                });
     }
 
     @Override

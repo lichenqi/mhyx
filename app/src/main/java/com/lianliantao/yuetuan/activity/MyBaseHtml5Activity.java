@@ -28,9 +28,16 @@ import com.lianliantao.yuetuan.myutil.PhoneTopStyleUtil;
 import com.lianliantao.yuetuan.myutil.StatusBarUtils;
 import com.lianliantao.yuetuan.util.ToastUtils;
 
+import java.util.HashMap;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.sharesdk.framework.Platform;
+import cn.sharesdk.framework.PlatformActionListener;
+import cn.sharesdk.framework.ShareSDK;
+import cn.sharesdk.wechat.friends.Wechat;
+import cn.sharesdk.wechat.moments.WechatMoments;
 
 public class MyBaseHtml5Activity extends OriginalActivity {
     @BindView(R.id.viewHeight)
@@ -48,6 +55,7 @@ public class MyBaseHtml5Activity extends OriginalActivity {
     @BindView(R.id.webview)
     WebView webview;
     private String url;
+    private String shareUrl;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -84,6 +92,12 @@ public class MyBaseHtml5Activity extends OriginalActivity {
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 return super.shouldOverrideUrlLoading(view, request);
             }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                shareUrl = url;
+            }
         });
         webview.loadUrl(url);
         webview.addJavascriptInterface(new DemoJavascriptInterface(), "jsandroid");
@@ -99,6 +113,70 @@ public class MyBaseHtml5Activity extends OriginalActivity {
             cm.setPrimaryClip(mClipData);
             ClipContentUtil.getInstance(getApplicationContext()).putNewSearch(link);//保存记录到数据库
             ToastUtils.showBackgroudCenterToast(getApplicationContext(), "复制成功");
+        }
+
+        /*微信好友分享交互*/
+        @JavascriptInterface
+        public void StudyShareToFriend(String title, String shortUrl, String picurl) {
+            String content = "如何在麻花优选联盟搜索商品\n" + shareUrl;
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Wechat.ShareParams sp = new Wechat.ShareParams();
+                    sp.setText(content);
+                    sp.setShareType(Platform.SHARE_TEXT);
+                    Platform wechat = ShareSDK.getPlatform(Wechat.NAME);
+                    wechat.setPlatformActionListener(new PlatformActionListener() {
+                        @Override
+                        public void onComplete(Platform platform, int i, HashMap<String, Object> hashMap) {
+                        }
+
+                        @Override
+                        public void onError(Platform platform, int i, Throwable throwable) {
+                        }
+
+                        @Override
+                        public void onCancel(Platform platform, int i) {
+                        }
+                    });
+                    wechat.share(sp);
+                }
+            });
+        }
+
+        /*微信朋友圈分享交互*/
+        @JavascriptInterface
+        public void StudyShareToCircle(String title, String shortUrl, String picurl) {
+            String content = "如何在麻花优选联盟搜索商品\n" + shortUrl;
+            ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData mClipData = ClipData.newPlainText("Label", content);
+            cm.setPrimaryClip(mClipData);
+            ToastUtils.showToast(getApplicationContext(), "文案已复制到剪切板");
+            ClipContentUtil.getInstance(getApplicationContext()).putNewSearch(content);//保存记录到数据库
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    WechatMoments.ShareParams sp = new WechatMoments.ShareParams();
+                    sp.setImageUrl(picurl);
+                    sp.setShareType(Platform.SHARE_IMAGE);
+                    Platform weChat = ShareSDK.getPlatform(WechatMoments.NAME);
+                    weChat.setPlatformActionListener(new PlatformActionListener() {
+                        @Override
+                        public void onComplete(Platform platform, int i, HashMap<String, Object> hashMap) {
+                        }
+
+                        @Override
+                        public void onError(Platform platform, int i, Throwable throwable) {
+                        }
+
+                        @Override
+                        public void onCancel(Platform platform, int i) {
+                        }
+                    });
+                    weChat.share(sp);
+                }
+            });
+
         }
     }
 
