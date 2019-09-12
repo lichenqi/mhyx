@@ -278,7 +278,7 @@ public class GoodRecommendFragment extends LazyBaseFragment {
                     @Override
                     public void onClick(View v) {
                         shareDialog.dismiss();
-                        saveCommonImage();
+                        saveCommonImage("save");
                     }
                 });
                 reWChat.setOnClickListener(new View.OnClickListener() {/*微信好友分享*/
@@ -299,7 +299,7 @@ public class GoodRecommendFragment extends LazyBaseFragment {
                     @Override
                     public void onClick(View v) {
                         shareDialog.dismiss();
-                        saveCommonImage();
+                        saveCommonImage("WChatCircle");
                     }
                 });
             }
@@ -309,7 +309,7 @@ public class GoodRecommendFragment extends LazyBaseFragment {
     }
 
     /*公共的保存图片方法*/
-    private void saveCommonImage() {
+    private void saveCommonImage(String type) {
         String description = list.get(positionWhich).getDescription();
         ClipData mClipData = ClipData.newPlainText("Label", description);
         cm.setPrimaryClip(mClipData);
@@ -317,11 +317,11 @@ public class GoodRecommendFragment extends LazyBaseFragment {
         CircleRecommendBean.InfoBean.GoodsInfoBean goodsInfo = list.get(positionWhich).getGoodsInfo();
         List<CircleRecommendBean.InfoBean.ImgInfoBean> imgInfo = list.get(positionWhich).getImgInfo();
         if (goodsInfo == null) {/*全是商品   全都要二维码合成图 保存*/
-            MultiSavePosterPhotosUtil util = new MultiSavePosterPhotosUtil(context, imgInfo, (AppCompatActivity) getActivity());
+            MultiSavePosterPhotosUtil util = new MultiSavePosterPhotosUtil(context, imgInfo, (AppCompatActivity) getActivity(), type);
             util.setSave();
         } else {/*第一个 合成二维码组图  其余保存商品纯图片*/
             String itemId = goodsInfo.getItemId();
-            SaveFirstPosterAndImageUrlUtil utilSecond = new SaveFirstPosterAndImageUrlUtil(context, imgInfo, itemId, (AppCompatActivity) getActivity());
+            SaveFirstPosterAndImageUrlUtil utilSecond = new SaveFirstPosterAndImageUrlUtil(context, imgInfo, itemId, (AppCompatActivity) getActivity(), type);
             utilSecond.setSave();
         }
     }

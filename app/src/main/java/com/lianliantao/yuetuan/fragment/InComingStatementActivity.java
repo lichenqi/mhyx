@@ -2,6 +2,7 @@ package com.lianliantao.yuetuan.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -15,8 +16,18 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 import com.lianliantao.yuetuan.R;
+import com.lianliantao.yuetuan.app_manage.MyApplication;
 import com.lianliantao.yuetuan.base_activity.OriginalActivity;
+import com.lianliantao.yuetuan.bean.UserMoneyBean;
+import com.lianliantao.yuetuan.common_manager.CommonParamUtil;
+import com.lianliantao.yuetuan.constant.CommonApi;
+import com.lianliantao.yuetuan.myokhttputils.response.JsonResponseHandler;
 import com.lianliantao.yuetuan.myutil.PhoneTopStyleUtil;
+import com.lianliantao.yuetuan.util.GsonUtil;
+import com.lianliantao.yuetuan.util.StatusBarUtils;
+import com.lianliantao.yuetuan.util.ToastUtils;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,10 +57,8 @@ public class InComingStatementActivity extends OriginalActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        PhoneTopStyleUtil.setPhoneStatusTheme(this, 0);
-        PhoneTopStyleUtil.setBottomNavigationBarColor(this);
+        StatusBarUtils.transparencyBar(this);
         int statusBarHeight = PhoneTopStyleUtil.getStatusBarHeight(getApplicationContext());
-        int bottomStatusHeight = PhoneTopStyleUtil.getBottomStatusHeight(getApplicationContext());
         setContentView(R.layout.incomingstatementactivity);
         ButterKnife.bind(this);
         Intent intent = getIntent();
@@ -59,7 +68,34 @@ public class InComingStatementActivity extends OriginalActivity {
         layoutParams.height = statusBarHeight;
         viewHeight.setLayoutParams(layoutParams);
         initView();
-        money.setText(income + "元");
+        getMoneyData();
+    }
+
+    /*我的收入报表接口*/
+    private void getMoneyData() {
+        MyApplication.getInstance().getMyOkHttp().post().tag(this)
+                .url(CommonApi.BASEURL + CommonApi.MINEUSERMONEYDATA + CommonParamUtil.getCommonParamSign(getApplicationContext()))
+                .enqueue(new JsonResponseHandler() {
+
+                    @Override
+                    public void onSuccess(int statusCode, JSONObject response) {
+                        super.onSuccess(statusCode, response);
+                        Log.i("我的数据", response.toString());
+                        UserMoneyBean bean = GsonUtil.GsonToBean(response.toString(), UserMoneyBean.class);
+                        if (bean.getErrno() == CommonApi.RESULTCODEOK) {
+                            UserMoneyBean.BalanceInfoBean balanceInfo = bean.getBalanceInfo();
+                            String income = balanceInfo.getIncome();
+                            money.setText(income + "元");
+                        } else {
+                            ToastUtils.showToast(getApplicationContext(), bean.getUsermsg());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, String error_msg) {
+                        ToastUtils.showToast(getApplicationContext(), CommonApi.ERROR_NET_MSG);
+                    }
+                });
     }
 
     @OnClick({R.id.back})
