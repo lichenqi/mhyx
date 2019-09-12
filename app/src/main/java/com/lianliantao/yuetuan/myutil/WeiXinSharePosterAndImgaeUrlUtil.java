@@ -129,13 +129,8 @@ public class WeiXinSharePosterAndImgaeUrlUtil {
                         Log.i("淘口令接口", response.toString());
                         TKLBean tklBean = GsonUtil.GsonToBean(response.toString(), TKLBean.class);
                         if (tklBean.getErrno() == CommonApi.RESULTCODEOK) {
-                            String tklBeanUrl = tklBean.getUrl();/*微信平台二维码内容*/
-                            String qqshareurl = tklBean.getShareUrl();/*qq平台的二维码内容*/
-                            if (shareAppType.contains("WChat")) {
-                                initPosterData(tklBeanUrl, goodsDetail);
-                            } else {
-                                initPosterData(qqshareurl, goodsDetail);
-                            }
+                            String tklBeanUrl = tklBean.getUrl();
+                            initPosterData(tklBeanUrl, goodsDetail);
                         } else {
                             ToastUtils.showToast(context, tklBean.getUsermsg());
                         }

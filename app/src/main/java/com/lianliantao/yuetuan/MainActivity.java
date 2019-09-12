@@ -79,7 +79,7 @@ public class MainActivity extends OriginalActivity {
     private int[] seIds = {R.mipmap.home_unselector, R.mipmap.tab_pinpai_no, R.drawable.vip_centy, R.mipmap.tab_faquan_no, R.mipmap.tab_wode_no};
     private Fragment currentFragment;
     long exitTime = 0;
-    /**/
+    /*这是一个白纸*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

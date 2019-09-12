@@ -56,13 +56,11 @@ public class MultiSavePosterPhotosUtil {
     private TextView tv_content;
     private int widthPixels;
     private int heightPixels;
-    private String type;
 
-    public MultiSavePosterPhotosUtil(Context context, List<CircleRecommendBean.InfoBean.ImgInfoBean> imgInfo, AppCompatActivity activity, String type) {
+    public MultiSavePosterPhotosUtil(Context context, List<CircleRecommendBean.InfoBean.ImgInfoBean> imgInfo, AppCompatActivity activity) {
         this.context = context;
         this.activity = activity;
         this.imgInfo = imgInfo;
-        this.type = type;
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         widthPixels = displayMetrics.widthPixels;
         heightPixels = displayMetrics.heightPixels;
@@ -137,12 +135,7 @@ public class MultiSavePosterPhotosUtil {
                         TKLBean tklBean = GsonUtil.GsonToBean(response.toString(), TKLBean.class);
                         if (tklBean.getErrno() == CommonApi.RESULTCODEOK) {
                             String tklBeanUrl = tklBean.getUrl();
-                            String shareUrl = tklBean.getShareUrl();
-                            if (type.contains("WChat")) {
-                                initPosterData(tklBeanUrl, goodsDetail);
-                            } else {
-                                initPosterData(shareUrl, goodsDetail);
-                            }
+                            initPosterData(tklBeanUrl, goodsDetail);
                         } else {
                             ToastUtils.showToast(context, tklBean.getUsermsg());
                         }

@@ -39,6 +39,8 @@ import com.lianliantao.yuetuan.util.DensityUtils;
 import com.lianliantao.yuetuan.util.GsonUtil;
 import com.lianliantao.yuetuan.util.IconAndTextGroupUtil;
 import com.lianliantao.yuetuan.util.MoneyFormatUtil;
+import com.lianliantao.yuetuan.util.ParamUtil;
+import com.lianliantao.yuetuan.util.PreferUtils;
 import com.lianliantao.yuetuan.util.QRCodeUtil;
 import com.lianliantao.yuetuan.util.ToastUtils;
 import com.makeramen.roundedimageview.RoundedImageView;
@@ -143,12 +145,7 @@ public class WeiXinShareOnlyPosterUtil {
                         TKLBean tklBean = GsonUtil.GsonToBean(response.toString(), TKLBean.class);
                         if (tklBean.getErrno() == CommonApi.RESULTCODEOK) {
                             String tklBeanUrl = tklBean.getUrl();
-                            String shareUrl = tklBean.getShareUrl();
-                            if (shareAppType.contains("WChat")) {
-                                initPosterData(tklBeanUrl, goodsDetail);
-                            } else {
-                                initPosterData(shareUrl, goodsDetail);
-                            }
+                            initPosterData(tklBeanUrl, goodsDetail);
                         } else {
                             ToastUtils.showToast(context, tklBean.getUsermsg());
                         }

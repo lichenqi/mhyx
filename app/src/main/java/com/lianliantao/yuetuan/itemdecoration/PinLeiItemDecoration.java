@@ -5,10 +5,6 @@ import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.lianliantao.yuetuan.bean.ShareSelectBean;
-
-import java.util.List;
-
 /**
  * Created by Administrator on 2018/5/4.
  */
@@ -16,17 +12,17 @@ import java.util.List;
 public class PinLeiItemDecoration extends RecyclerView.ItemDecoration {
 
     private int space;
-    private List<ShareSelectBean> list;
+    private String[] split;
 
-    public PinLeiItemDecoration(int space, List<ShareSelectBean> list) {
+    public PinLeiItemDecoration(int space, String[] split) {
         this.space = space;
-        this.list = list;
+        this.split = split;
     }
 
 
     @Override
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-        if (parent.getChildLayoutPosition(view) == (list.size()) - 1) {/*代表最后一个item*/
+        if (parent.getChildLayoutPosition(view) == (split.length) - 1) {/*代表最后一个item*/
             outRect.right = space;
         }
         outRect.top = space;
