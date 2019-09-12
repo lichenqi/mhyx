@@ -14,7 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -50,17 +50,19 @@ import java.util.List;
 public class MultiSavePosterPhotosUtil {
     private Context context;
     private List<CircleRecommendBean.InfoBean.ImgInfoBean> imgInfo;
-    private AppCompatActivity activity;
+    private FragmentActivity activity;
     private List<Bitmap> bitmapList;
     private NiceDialog notice_dialog, openWeiXinDialog;
     private TextView tv_content;
     private int widthPixels;
     private int heightPixels;
+    private String type;
 
-    public MultiSavePosterPhotosUtil(Context context, List<CircleRecommendBean.InfoBean.ImgInfoBean> imgInfo, AppCompatActivity activity) {
+    public MultiSavePosterPhotosUtil(Context context, List<CircleRecommendBean.InfoBean.ImgInfoBean> imgInfo, FragmentActivity activity, String type) {
         this.context = context;
         this.activity = activity;
         this.imgInfo = imgInfo;
+        this.type = type;
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         widthPixels = displayMetrics.widthPixels;
         heightPixels = displayMetrics.heightPixels;
@@ -135,7 +137,12 @@ public class MultiSavePosterPhotosUtil {
                         TKLBean tklBean = GsonUtil.GsonToBean(response.toString(), TKLBean.class);
                         if (tklBean.getErrno() == CommonApi.RESULTCODEOK) {
                             String tklBeanUrl = tklBean.getUrl();
-                            initPosterData(tklBeanUrl, goodsDetail);
+                            String shareUrl = tklBean.getShareUrl();
+                            if (type.contains("WChat")) {
+                                initPosterData(tklBeanUrl, goodsDetail);
+                            } else {
+                                initPosterData(shareUrl, goodsDetail);
+                            }
                         } else {
                             ToastUtils.showToast(context, tklBean.getUsermsg());
                         }

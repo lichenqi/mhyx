@@ -18,7 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -39,9 +39,7 @@ import com.lianliantao.yuetuan.util.DensityUtils;
 import com.lianliantao.yuetuan.util.GsonUtil;
 import com.lianliantao.yuetuan.util.IconAndTextGroupUtil;
 import com.lianliantao.yuetuan.util.MoneyFormatUtil;
-import com.lianliantao.yuetuan.util.ParamUtil;
 import com.lianliantao.yuetuan.util.PosterPhotoSaveUtil;
-import com.lianliantao.yuetuan.util.PreferUtils;
 import com.lianliantao.yuetuan.util.QRCodeUtil;
 import com.lianliantao.yuetuan.util.ToastUtils;
 import com.makeramen.roundedimageview.RoundedImageView;
@@ -62,19 +60,21 @@ public class SaveFirstPosterAndImageUrlUtil {
     private Context context;
     private List<CircleRecommendBean.InfoBean.ImgInfoBean> imgInfo;
     private String itemId;
-    private AppCompatActivity activity;
+    private FragmentActivity activity;
     private List<Bitmap> firstIsPhotoBitmap;
+    private String type;
     private NiceDialog notice_dialog, openWeiXinDialog;
     private TextView tv_content;
     private int widthPixels;
     private int heightPixels;
 
-    public SaveFirstPosterAndImageUrlUtil(Context context, List<CircleRecommendBean.InfoBean.ImgInfoBean> imgInfo, String itemId, AppCompatActivity activity) {
+    public SaveFirstPosterAndImageUrlUtil(Context context, List<CircleRecommendBean.InfoBean.ImgInfoBean> imgInfo, String itemId, FragmentActivity activity, String type) {
         this.context = context;
         this.activity = activity;
         this.imgInfo = imgInfo;
         this.itemId = itemId;
-        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        this.type = type;
+        DisplayMetrics displayMetrics = this.context.getResources().getDisplayMetrics();
         widthPixels = displayMetrics.widthPixels;
         heightPixels = displayMetrics.heightPixels;
     }
@@ -145,7 +145,12 @@ public class SaveFirstPosterAndImageUrlUtil {
                         TKLBean tklBean = GsonUtil.GsonToBean(response.toString(), TKLBean.class);
                         if (tklBean.getErrno() == CommonApi.RESULTCODEOK) {
                             String tklBeanUrl = tklBean.getUrl();
-                            initSecondModePosterData(tklBeanUrl, goodsDetail);
+                            String shareUrl = tklBean.getShareUrl();
+                            if (type.contains("WChat")) {
+                                initSecondModePosterData(tklBeanUrl, goodsDetail);
+                            } else {
+                                initSecondModePosterData(shareUrl, goodsDetail);
+                            }
                         } else {
                             ToastUtils.showToast(context, tklBean.getUsermsg());
                         }

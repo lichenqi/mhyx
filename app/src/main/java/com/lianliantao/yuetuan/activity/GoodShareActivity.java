@@ -131,7 +131,7 @@ public class GoodShareActivity extends BaseTitleActivity {
     LinearLayout qhsy;
     @BindView(R.id.llBottom)
     LinearLayout llBottom;
-    String tklContent, tklBeanUrl;
+    String tklContent, tklBeanUrl, qqshareUrl;
     ClipboardManager cm;
     Dialog dialog;
     LinkedHashMap<Integer, Integer> saveSelectedPosition = new LinkedHashMap<>();
@@ -209,21 +209,29 @@ public class GoodShareActivity extends BaseTitleActivity {
         reIvBig.setLayoutParams(layoutParamsRe);
     }
 
+    String[] split;
+
     /*图片水平滑动*/
     private void initRecyclerview() {
         list = new ArrayList<>();
-        String[] split = imagesList.split(",");
         ShareSelectBean bean;
-        for (int i = 0; i < split.length; i++) {
+        if (TextUtils.isEmpty(imagesList)) {
             bean = new ShareSelectBean();
-            bean.setUrl(split[i]);
+            bean.setUrl(pictUrl);
             list.add(bean);
+        } else {
+            split = imagesList.split(",");
+            for (int i = 0; i < split.length; i++) {
+                bean = new ShareSelectBean();
+                bean.setUrl(split[i]);
+                list.add(bean);
+            }
         }
         recyclerview.setHasFixedSize(true);
         LinearLayoutManager manager = new LinearLayoutManager(getApplicationContext());
         manager.setOrientation(LinearLayoutManager.HORIZONTAL);
         recyclerview.setLayoutManager(manager);
-        recyclerview.addItemDecoration(new PinLeiItemDecoration(DensityUtils.dip2px(getApplicationContext(), 10), split));
+        recyclerview.addItemDecoration(new PinLeiItemDecoration(DensityUtils.dip2px(getApplicationContext(), 10), list));
         HorizontalImagesAdapter adapter = new HorizontalImagesAdapter(getApplicationContext(), list);
         recyclerview.setAdapter(adapter);
         list.get(0).setSelected(true);
@@ -372,6 +380,8 @@ public class GoodShareActivity extends BaseTitleActivity {
         ToastUtils.showBackgroudCenterToast(getApplicationContext(), "分享文案复制成功");
     }
 
+    Bitmap qrCodeBitmap;
+
     /*公共的最后选中图片方法*/
     private void commonSelectImgFunction(String type) {
         selectedPosition = new ArrayList<>();
@@ -383,7 +393,11 @@ public class GoodShareActivity extends BaseTitleActivity {
         }
         Collections.sort(selectedPosition);
         if (selectedPosition.size() > 0) {
-            Bitmap qrCodeBitmap = QRCodeUtil.createQRCodeBitmap(tklBeanUrl, DensityUtils.dip2px(getApplicationContext(), 100));
+            if (type.contains("WChat")) {
+                qrCodeBitmap = QRCodeUtil.createQRCodeBitmap(tklBeanUrl, DensityUtils.dip2px(getApplicationContext(), 100));
+            } else {
+                qrCodeBitmap = QRCodeUtil.createQRCodeBitmap(qqshareUrl, DensityUtils.dip2px(getApplicationContext(), 100));
+            }
             qrcodeIv.setImageBitmap(qrCodeBitmap);
             selectedImagesList = new ArrayList<>();
             for (int i = 0; i < selectedPosition.size(); i++) {
@@ -633,8 +647,9 @@ public class GoodShareActivity extends BaseTitleActivity {
                         Log.i("淘口令接口", response.toString());
                         TKLBean tklBean = GsonUtil.GsonToBean(response.toString(), TKLBean.class);
                         if (tklBean.getErrno() == CommonApi.RESULTCODEOK) {
+                            qqshareUrl = tklBean.getShareUrl();/*qq和微博平台专用链接*/
                             tklContent = tklBean.getText();
-                            tklBeanUrl = tklBean.getUrl();
+                            tklBeanUrl = tklBean.getUrl();/*微信专用链接*/
                         } else {
                             ToastUtils.showToast(getApplicationContext(), tklBean.getUsermsg());
                         }

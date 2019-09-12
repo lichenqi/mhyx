@@ -16,7 +16,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -278,7 +277,7 @@ public class GoodRecommendFragment extends LazyBaseFragment {
                     @Override
                     public void onClick(View v) {
                         shareDialog.dismiss();
-                        saveCommonImage();
+                        saveCommonImage("save");
                     }
                 });
                 reWChat.setOnClickListener(new View.OnClickListener() {/*微信好友分享*/
@@ -299,7 +298,7 @@ public class GoodRecommendFragment extends LazyBaseFragment {
                     @Override
                     public void onClick(View v) {
                         shareDialog.dismiss();
-                        saveCommonImage();
+                        saveCommonImage("WChatCircle");
                     }
                 });
             }
@@ -309,7 +308,7 @@ public class GoodRecommendFragment extends LazyBaseFragment {
     }
 
     /*公共的保存图片方法*/
-    private void saveCommonImage() {
+    private void saveCommonImage(String type) {
         String description = list.get(positionWhich).getDescription();
         ClipData mClipData = ClipData.newPlainText("Label", description);
         cm.setPrimaryClip(mClipData);
@@ -317,11 +316,11 @@ public class GoodRecommendFragment extends LazyBaseFragment {
         CircleRecommendBean.InfoBean.GoodsInfoBean goodsInfo = list.get(positionWhich).getGoodsInfo();
         List<CircleRecommendBean.InfoBean.ImgInfoBean> imgInfo = list.get(positionWhich).getImgInfo();
         if (goodsInfo == null) {/*全是商品   全都要二维码合成图 保存*/
-            MultiSavePosterPhotosUtil util = new MultiSavePosterPhotosUtil(context, imgInfo, (AppCompatActivity) getActivity());
+            MultiSavePosterPhotosUtil util = new MultiSavePosterPhotosUtil(context, imgInfo, activity, type);
             util.setSave();
         } else {/*第一个 合成二维码组图  其余保存商品纯图片*/
             String itemId = goodsInfo.getItemId();
-            SaveFirstPosterAndImageUrlUtil utilSecond = new SaveFirstPosterAndImageUrlUtil(context, imgInfo, itemId, (AppCompatActivity) getActivity());
+            SaveFirstPosterAndImageUrlUtil utilSecond = new SaveFirstPosterAndImageUrlUtil(context, imgInfo, itemId, activity, type);
             utilSecond.setSave();
         }
     }
@@ -331,11 +330,11 @@ public class GoodRecommendFragment extends LazyBaseFragment {
         List<CircleRecommendBean.InfoBean.ImgInfoBean> imgInfo = list.get(positionWhich).getImgInfo();
         CircleRecommendBean.InfoBean.GoodsInfoBean goodsInfo = list.get(positionWhich).getGoodsInfo();
         if (goodsInfo == null) {/*全部是商品 全部要合成二维码组图分享*/
-            WeiXinShareOnlyPosterUtil weiXinShareOnlyPosterUtil = new WeiXinShareOnlyPosterUtil(context, imgInfo, (AppCompatActivity) getActivity(), type);
+            WeiXinShareOnlyPosterUtil weiXinShareOnlyPosterUtil = new WeiXinShareOnlyPosterUtil(context, imgInfo, activity, type);
             weiXinShareOnlyPosterUtil.setWeiXinFriendShare();
         } else {/*第一张图是商品  要合成  其余全是纯图片*/
             String itemId = goodsInfo.getItemId();
-            WeiXinSharePosterAndImgaeUrlUtil util = new WeiXinSharePosterAndImgaeUrlUtil(context, imgInfo, itemId, (AppCompatActivity) getActivity(), type);
+            WeiXinSharePosterAndImgaeUrlUtil util = new WeiXinSharePosterAndImgaeUrlUtil(context, imgInfo, itemId, activity, type);
             util.setShare();
         }
         ShareNumData shareNumData = new ShareNumData(context, list.get(positionWhich).getId());

@@ -12,7 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -48,13 +48,13 @@ public class WeiXinSharePosterAndImgaeUrlUtil {
     private Context context;
     private List<CircleRecommendBean.InfoBean.ImgInfoBean> imgInfo;
     private String itemId;
-    private AppCompatActivity activity;
+    private FragmentActivity activity;
     private String shareAppType;
     private int widthPixels;
     private int heightPixels;
     private NiceDialog notice_dialog;
 
-    public WeiXinSharePosterAndImgaeUrlUtil(Context context, List<CircleRecommendBean.InfoBean.ImgInfoBean> imgInfo, String itemId, AppCompatActivity activity, String shareAppType) {
+    public WeiXinSharePosterAndImgaeUrlUtil(Context context, List<CircleRecommendBean.InfoBean.ImgInfoBean> imgInfo, String itemId, FragmentActivity activity, String shareAppType) {
         this.context = context;
         this.imgInfo = imgInfo;
         this.itemId = itemId;
@@ -129,8 +129,13 @@ public class WeiXinSharePosterAndImgaeUrlUtil {
                         Log.i("淘口令接口", response.toString());
                         TKLBean tklBean = GsonUtil.GsonToBean(response.toString(), TKLBean.class);
                         if (tklBean.getErrno() == CommonApi.RESULTCODEOK) {
-                            String tklBeanUrl = tklBean.getUrl();
-                            initPosterData(tklBeanUrl, goodsDetail);
+                            String tklBeanUrl = tklBean.getUrl();/*微信平台二维码内容*/
+                            String qqshareurl = tklBean.getShareUrl();/*qq平台的二维码内容*/
+                            if (shareAppType.contains("WChat")) {
+                                initPosterData(tklBeanUrl, goodsDetail);
+                            } else {
+                                initPosterData(qqshareurl, goodsDetail);
+                            }
                         } else {
                             ToastUtils.showToast(context, tklBean.getUsermsg());
                         }
