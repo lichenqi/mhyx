@@ -258,6 +258,7 @@ public class GoodShareActivity extends BaseTitleActivity {
                 Intent intent = new Intent(getApplicationContext(), ShareImageBigLookActivity.class);
                 intent.putExtra("position", position);
                 intent.putExtra("imagesList", imagesList);
+                intent.putExtra("pictUrl", pictUrl);
                 intent.putExtra("title", title);
                 intent.putExtra("payPrice", payPrice);
                 intent.putExtra("zkFinalPrice", zkFinalPrice);

@@ -33,6 +33,9 @@ import com.lianliantao.yuetuan.util.QRCodeUtil;
 import com.lianliantao.yuetuan.util.StatusBarUtils;
 import com.makeramen.roundedimageview.RoundedImageView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -50,6 +53,8 @@ public class ShareImageBigLookActivity extends OriginalActivity {
     RoundedImageView ivBig;
     String[] split;
     View viewPoster;
+    private List<String> photoList;
+    private String pictUrl;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,13 +69,22 @@ public class ShareImageBigLookActivity extends OriginalActivity {
         Intent intent = getIntent();
         position = intent.getIntExtra("position", 0);
         imagesList = intent.getStringExtra("imagesList");
+        pictUrl = intent.getStringExtra("pictUrl");
         title = intent.getStringExtra("title");
         payPrice = intent.getStringExtra("payPrice");
         zkFinalPrice = intent.getStringExtra("zkFinalPrice");
         couponAmount = intent.getStringExtra("couponAmount");
         userType = intent.getStringExtra("userType");
         tklBeanUrl = intent.getStringExtra("tklBeanUrl");
-        split = imagesList.split(",");
+        photoList = new ArrayList<>();
+        if (TextUtils.isEmpty(imagesList)) {
+            photoList.add(pictUrl);
+        } else {
+            split = imagesList.split(",");
+            for (int i = 0; i < split.length; i++) {
+                photoList.add(split[i]);
+            }
+        }
         buidFirstPoster();
     }
 
@@ -110,7 +124,7 @@ public class ShareImageBigLookActivity extends OriginalActivity {
         LinearLayout.LayoutParams layoutParamsRe = (LinearLayout.LayoutParams) reIvBig.getLayoutParams();
         layoutParamsRe.height = widthPixels;
         reIvBig.setLayoutParams(layoutParamsRe);
-        Glide.with(getApplicationContext()).load(split[0]).asBitmap().into(target);
+        Glide.with(getApplicationContext()).load(photoList.get(0)).asBitmap().into(target);
     }
 
     private SimpleTarget target = new SimpleTarget<Bitmap>() {
@@ -135,7 +149,7 @@ public class ShareImageBigLookActivity extends OriginalActivity {
     private void initViewPager() {
         viewpager.setAdapter(new ImageviewAdapter());
         viewpager.setCurrentItem(position);
-        notice.setText((position + 1) + "/" + split.length);
+        notice.setText((position + 1) + "/" + photoList.size());
         viewpager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -144,7 +158,7 @@ public class ShareImageBigLookActivity extends OriginalActivity {
 
             @Override
             public void onPageSelected(int position) {
-                notice.setText((position + 1) + "/" + split.length);
+                notice.setText((position + 1) + "/" + photoList.size());
             }
 
             @Override
@@ -163,7 +177,7 @@ public class ShareImageBigLookActivity extends OriginalActivity {
 
         @Override
         public int getCount() {
-            return split == null ? 0 : split.length;
+            return photoList == null ? 0 : photoList.size();
         }
 
         @Override
@@ -179,7 +193,7 @@ public class ShareImageBigLookActivity extends OriginalActivity {
             if (position == 0) {
                 imageView.setImageBitmap(hebingBitmap);
             } else {
-                Glide.with(getApplicationContext()).load(split[position]).into(imageView);
+                Glide.with(getApplicationContext()).load(photoList.get(position)).into(imageView);
             }
             container.addView(imageView);
             imageView.setOnClickListener(new View.OnClickListener() {

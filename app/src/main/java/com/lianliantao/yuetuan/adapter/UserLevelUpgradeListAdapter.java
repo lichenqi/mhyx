@@ -45,7 +45,7 @@ public class UserLevelUpgradeListAdapter extends RecyclerView.Adapter<UserLevelU
         holder.content.setText(rank + "： " + total + unit);
         holder.num.setText(remain);
         holder.totalNum.setText("/" + total + unit);
-        Double progress = Double.valueOf(remain) / Double.valueOf(total);
+        Double progress = Double.valueOf(remain) / Double.valueOf(total) * 100;
         holder.progressBar.setProgress(progress.intValue());
     }
 

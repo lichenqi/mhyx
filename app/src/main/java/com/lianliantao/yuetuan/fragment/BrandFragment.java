@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -62,6 +63,8 @@ public class BrandFragment extends Fragment {
     LinearLayout llChageTitle;
     @BindView(R.id.viewHeight)
     View viewHeight;
+    @BindView(R.id.re_white_bg)
+    RelativeLayout re_white_bg;
     @BindView(R.id.tablayout)
     TabLayout tablayout;
     @BindView(R.id.viewpager)

@@ -18,16 +18,24 @@
             android:layout_height="20dp"
             android:background="@color/black" />
 
-        <TextView
-            android:id="@+id/white_brand_name"
+        <RelativeLayout
+            android:id="@+id/re_white_bg"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:background="@color/white"
-            android:gravity="center"
-            android:text="品牌"
-            android:textColor="@color/black"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/white_brand_name"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="品牌"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
 
     </LinearLayout>
 

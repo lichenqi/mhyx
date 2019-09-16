@@ -53,7 +53,7 @@ public class TaoBaoAuthActivity extends BaseTitleActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ButterKnife.bind(this);
-        setMiddleTitle("淘宝渠道备案");
+        setMiddleTitle("淘宝授权");
         authUrl = PreferUtils.getString(getApplicationContext(), "authUrl");
         ImageView iv_back = findViewById(R.id.iv_back);
         Intent intent = getIntent();

@@ -119,4 +119,6 @@ public class CommonApi {
     public static final String GOOD_SHOP_LINK = "goods/Shoplink";
     /*天猫活动链接*/
     public static final String TIANMAO_ACTIVITY_LINK = "goods/activitylink";
+    /*用户淘宝备案*/
+    public static final String USER_BIND_TBK = "u/Hasbindtbk";
 }

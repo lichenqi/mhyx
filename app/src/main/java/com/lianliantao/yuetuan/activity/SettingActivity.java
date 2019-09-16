@@ -24,6 +24,7 @@ import com.lianliantao.yuetuan.app_manage.MyApplication;
 import com.lianliantao.yuetuan.base_activity.BaseTitleActivity;
 import com.lianliantao.yuetuan.bean.BaseBean;
 import com.lianliantao.yuetuan.bean.SettingBean;
+import com.lianliantao.yuetuan.bean.UserBindTBKBean;
 import com.lianliantao.yuetuan.common_manager.CommonParamUtil;
 import com.lianliantao.yuetuan.constant.CommonApi;
 import com.lianliantao.yuetuan.custom_view.CircleImageView;
@@ -85,13 +86,14 @@ public class SettingActivity extends BaseTitleActivity {
     RelativeLayout reVersion;
     Dialog dialog;
     AlibcLogin alibcLogin;
-    String nick, avatarUrl;
-    String authUrl, hasBindTbk;
+    String taobaoNick, taobaoUserIv;/*淘宝头像和昵称*/
+    String authUrl;/*用户头像*/
     Intent intent;
     private String mobile;
     private String orderPrivacy;
     private String orderIncomeNotice;
     private String shareAppDownload;
+    private String hasBindTbkdata;
 
     // 声明一个订阅方法，用于接收事件
     @Subscribe
@@ -119,11 +121,44 @@ public class SettingActivity extends BaseTitleActivity {
         setMiddleTitle("设置");
         alibcLogin = AlibcLogin.getInstance();
         authUrl = PreferUtils.getString(getApplicationContext(), "authUrl");
-        hasBindTbk = PreferUtils.getString(getApplicationContext(), "hasBindTbk");
-        initViewData();
+        initViewData();/*基本信息初始化*/
         initPhoneView();/*手机号设置*/
         initWChatNum();/*微信号设置*/
         getSwitchData();/*获取通知按钮状态*/
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getUserBindTbkData();/*获取用户备案淘宝客状态*/
+    }
+
+    /*获取用户备案淘宝客状态*/
+    private void getUserBindTbkData() {
+        MyApplication.getInstance().getMyOkHttp().post()
+                .url(CommonApi.BASEURL + CommonApi.USER_BIND_TBK + CommonParamUtil.getCommonParamSign(getApplicationContext()))
+                .enqueue(new JsonResponseHandler() {
+
+
+                    @Override
+                    public void onSuccess(int statusCode, JSONObject response) {
+                        super.onSuccess(statusCode, response);
+                        Log.i("备案信息", "onSuccess: " + response);
+                        UserBindTBKBean bean = GsonUtil.GsonToBean(response.toString(), UserBindTBKBean.class);
+                        if (bean.errno == CommonApi.RESULTCODEOK) {
+                            hasBindTbkdata = bean.getHasBindTbk();
+                            if (hasBindTbkdata.equals("true")) {
+                                tvTaoBaoApproveLabel.setText("已认证");
+                            } else {
+                                tvTaoBaoApproveLabel.setText("未认证");
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, String error_msg) {
+                    }
+                });
     }
 
     private void getSwitchData() {
@@ -188,11 +223,6 @@ public class SettingActivity extends BaseTitleActivity {
         String nickName = PreferUtils.getString(getApplicationContext(), "nickName");
         Glide.with(getApplicationContext()).load(avatar).into(ivCircle);
         tvNickName.setText(nickName);
-        if (hasBindTbk.equals("true")) {
-            tvTaoBaoApproveLabel.setText("已认证");
-        } else {
-            tvTaoBaoApproveLabel.setText("未认证");
-        }
         String totalCacheSize = DataCleanManager.getTotalCacheSize(getApplicationContext());
         tvCache.setText(totalCacheSize);
         version.setText("V" + VersionUtil.getAndroidNumVersion(getApplicationContext()));
@@ -206,15 +236,35 @@ public class SettingActivity extends BaseTitleActivity {
                 showLoginOutDialog();
                 break;
             case R.id.reTaobaoQudao:/*淘宝渠道认证*/
-                hasBindTbk = PreferUtils.getString(getApplicationContext(), "hasBindTbk");
-                if (hasBindTbk.equals("true")) {
-                    Session session = alibcLogin.getSession();
-                    intent = new Intent(getApplicationContext(), TaoBaoChannelApproveSuccessActivity.class);
-                    intent.putExtra("avatarUrl", session.avatarUrl);
-                    intent.putExtra("nick", session.nick);
-                    startActivity(intent);
+                if (hasBindTbkdata.equals("true")) {
+                    session = alibcLogin.getSession();
+                    String openId = session.openId;
+                    if (TextUtils.isEmpty(openId)) {
+                        alibcLogin.showLogin(new AlibcLoginCallback() {
+                            @Override
+                            public void onSuccess(int i, String s, String s1) {
+                                session = alibcLogin.getSession();
+                                taobaoUserIv = session.avatarUrl;
+                                taobaoNick = session.nick;
+                                intent = new Intent(getApplicationContext(), TaoBaoChannelApproveSuccessActivity.class);
+                                intent.putExtra("avatarUrl", session.avatarUrl);
+                                intent.putExtra("nick", session.nick);
+                                startActivity(intent);
+                            }
+
+                            @Override
+                            public void onFailure(int i, String s) {
+
+                            }
+                        });
+                    } else {
+                        intent = new Intent(getApplicationContext(), TaoBaoChannelApproveSuccessActivity.class);
+                        intent.putExtra("avatarUrl", session.avatarUrl);
+                        intent.putExtra("nick", session.nick);
+                        startActivity(intent);
+                    }
                 } else {
-                    taobaoLogin();
+                    taobaoLogin();/*淘宝渠道备案操作*/
                 }
                 break;
             case R.id.reCancelTaoBaoAuth:
@@ -315,24 +365,37 @@ public class SettingActivity extends BaseTitleActivity {
                 });
     }
 
+    Session session;
+
     /*淘宝授权*/
     private void taobaoLogin() {
-        alibcLogin.showLogin(new AlibcLoginCallback() {
-            @Override
-            public void onSuccess(int i, String s, String s1) {
-                Session session = alibcLogin.getSession();
-                nick = session.nick;/*淘宝昵称*/
-                avatarUrl = session.avatarUrl;/*淘宝头像*/
-                intent = new Intent(getApplicationContext(), TaoBaoAuthActivity.class);
-                intent.putExtra("nick", nick);
-                intent.putExtra("avatarUrl", avatarUrl);
-                startActivityForResult(intent, 100);
-            }
+        session = alibcLogin.getSession();
+        String openId = session.openId;
+        if (TextUtils.isEmpty(openId)) {/*淘宝授权未登录*/
+            alibcLogin.showLogin(new AlibcLoginCallback() {
+                @Override
+                public void onSuccess(int i, String s, String s1) {
+                    session = alibcLogin.getSession();
+                    taobaoNick = session.nick;/*淘宝昵称*/
+                    taobaoUserIv = session.avatarUrl;/*淘宝头像*/
+                    intent = new Intent(getApplicationContext(), TaoBaoAuthActivity.class);
+                    intent.putExtra("nick", taobaoNick);
+                    intent.putExtra("avatarUrl", taobaoUserIv);
+                    startActivityForResult(intent, 100);
+                }
 
-            @Override
-            public void onFailure(int i, String s) {
-            }
-        });
+                @Override
+                public void onFailure(int i, String s) {
+                }
+            });
+        } else {/*淘宝授权已登录*/
+            taobaoNick = session.nick;/*淘宝昵称*/
+            taobaoUserIv = session.avatarUrl;/*淘宝头像*/
+            intent = new Intent(getApplicationContext(), TaoBaoAuthActivity.class);
+            intent.putExtra("nick", taobaoNick);
+            intent.putExtra("avatarUrl", taobaoUserIv);
+            startActivityForResult(intent, 100);
+        }
     }
 
     @Override
