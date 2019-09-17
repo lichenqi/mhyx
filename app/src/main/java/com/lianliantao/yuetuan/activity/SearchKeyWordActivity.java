@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -23,7 +24,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.lianliantao.yuetuan.R;
 import com.lianliantao.yuetuan.adapter.FuzzyAdater;
-import com.lianliantao.yuetuan.adapter.SearchKeyWordAdapter;
 import com.lianliantao.yuetuan.app_manage.MyApplication;
 import com.lianliantao.yuetuan.base_activity.BaseTitleActivity;
 import com.lianliantao.yuetuan.bean.FuzzyData;
@@ -34,6 +34,9 @@ import com.lianliantao.yuetuan.util.GsonUtil;
 import com.lianliantao.yuetuan.util.HistorySearchUtil;
 import com.lianliantao.yuetuan.util.ParamUtil;
 import com.lianliantao.yuetuan.util.ToastUtils;
+import com.zhy.view.flowlayout.FlowLayout;
+import com.zhy.view.flowlayout.TagAdapter;
+import com.zhy.view.flowlayout.TagFlowLayout;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -60,8 +63,6 @@ public class SearchKeyWordActivity extends BaseTitleActivity {
     /*搜索按钮*/
     @BindView(R.id.finish)
     TextView finish;
-    @BindView(R.id.re_title)
-    RelativeLayout reTitle;
     /*历史搜索头部大布局*/
     @BindView(R.id.re_histoy_notiy)
     RelativeLayout re_histoy_notiy;
@@ -69,8 +70,8 @@ public class SearchKeyWordActivity extends BaseTitleActivity {
     @BindView(R.id.iv_clean_histoy)
     ImageView ivCleanHistoy;
     /*历史搜索布局*/
-    @BindView(R.id.flowLayout)
-    RecyclerView flowLayout;
+    @BindView(R.id.tagFlowlayout)
+    TagFlowLayout tagFlowlayout;
     /*模糊搜索布局*/
     @BindView(R.id.fuzzy_recycler)
     RecyclerView fuzzyRecycler;
@@ -103,8 +104,6 @@ public class SearchKeyWordActivity extends BaseTitleActivity {
         setMiddleTitle("搜索");
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
-        flowLayout.setHasFixedSize(true);
-        flowLayout.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         fuzzyRecycler.setHasFixedSize(true);
         LinearLayoutManager manager = new LinearLayoutManager(getApplicationContext());
         fuzzyRecycler.setLayoutManager(manager);
@@ -174,22 +173,31 @@ public class SearchKeyWordActivity extends BaseTitleActivity {
         final List<String> list = HistorySearchUtil.getInstance(getApplicationContext()).queryHistorySearchList();
         Collections.reverse(list);
         if (list.size() > 0) {
-            flowLayout.setVisibility(View.VISIBLE);
+            tagFlowlayout.setVisibility(View.VISIBLE);
             re_histoy_notiy.setVisibility(View.VISIBLE);
         } else {
-            flowLayout.setVisibility(View.GONE);
+            tagFlowlayout.setVisibility(View.GONE);
             re_histoy_notiy.setVisibility(View.GONE);
         }
         //设置标签数据
-        SearchKeyWordAdapter searchKeyWordAdapter = new SearchKeyWordAdapter(list, getApplicationContext());
-        flowLayout.setAdapter(searchKeyWordAdapter);
-        searchKeyWordAdapter.setOnClickListener(new OnItemClick() {
+        TagAdapter adapter = new TagAdapter(list) {
             @Override
-            public void OnItemClickListener(View view, int position) {
+            public View getView(FlowLayout parent, int position, Object o) {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.flow_layout, tagFlowlayout, false);
+                TextView flow_tag = view.findViewById(R.id.flow_tag);
+                flow_tag.setText(list.get(position));
+                return view;
+            }
+        };
+        tagFlowlayout.setAdapter(adapter);
+        tagFlowlayout.setOnTagClickListener(new TagFlowLayout.OnTagClickListener() {
+            @Override
+            public boolean onTagClick(View view, int position, FlowLayout parent) {
                 Intent intent = new Intent(getApplicationContext(), SearchResultActivity.class);
                 intent.putExtra("keyword", list.get(position));
                 intent.putExtra("search_type", 1);
                 startActivityForResult(intent, 1);
+                return false;
             }
         });
     }

@@ -59,6 +59,7 @@ public class InputInviteCodeActivity extends BaseTitleActivity {
     @BindView(R.id.next)
     TextView next;
     String uId;
+    private String invitationCode;
 
     @Override
     public int getContainerView() {
@@ -125,6 +126,7 @@ public class InputInviteCodeActivity extends BaseTitleActivity {
                             llSuperView.setVisibility(View.VISIBLE);
                             Glide.with(getApplicationContext()).load(userInfo.getAvatar()).into(iv);
                             name.setText("您的邀请人： " + userInfo.getNickname());
+                            invitationCode = userInfo.getInvitationCode();
                         } else {
                             llSuperView.setVisibility(View.GONE);
                         }
@@ -159,7 +161,7 @@ public class InputInviteCodeActivity extends BaseTitleActivity {
     public void doneData(String code) {
         loadingDialog = DialogUtil.createLoadingDialog(InputInviteCodeActivity.this, "验证中...");
         LinkedHashMap<String, String> map = new LinkedHashMap<>();
-        map.put("invitationCode", code);
+        map.put("invitationCode", invitationCode);
         map.put("uId", uId);
         map.put("netType", NetUtil.getNetClassic(getApplicationContext()));
         map.put("deviceOs", "Android");
