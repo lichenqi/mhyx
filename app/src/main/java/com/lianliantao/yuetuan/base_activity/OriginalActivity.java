@@ -4,8 +4,6 @@ import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -14,35 +12,23 @@ import android.view.Window;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
-import com.lianliantao.yuetuan.MainActivity;
 import com.lianliantao.yuetuan.R;
 import com.lianliantao.yuetuan.activity.SearchResultActivity;
-import com.lianliantao.yuetuan.app_status.AppManager;
-import com.lianliantao.yuetuan.app_status.AppStatus;
-import com.lianliantao.yuetuan.app_status.AppStatusManager;
 import com.lianliantao.yuetuan.myutil.ClipContentUtil;
 import com.lianliantao.yuetuan.util.HistorySearchUtil;
 
 import java.util.List;
 
-/*最原始基本类*/
-public class OriginalActivity extends AppCompatActivity {
+/*这个类   是搜索标题弹窗类   登录注册模块不要继承这个类  其他全部继承该类*/
+public class OriginalActivity extends BigBaseOriginalActivity {
+
     Dialog dialog;
     ClipboardManager cm;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AppManager.getInstance().addActivity(this); //添加到栈中
-        if (AppStatusManager.getInstance().getAppStatus() == AppStatus.STATUS_RECYVLE) {
-            //跳到MainActivity,让MainActivity也finish掉
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
-            return;
-        }
     }
 
     @Override
@@ -121,30 +107,9 @@ public class OriginalActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        AppManager.getInstance().finishActivity(this); //从栈中移除
         if (dialog != null) {
             dialog.dismiss();
         }
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        if (newConfig.fontScale != 1) {
-            //非默认值
-            getResources();
-        }
-        super.onConfigurationChanged(newConfig);
-    }
-
-    @Override
-    public Resources getResources() {
-        Resources res = super.getResources();
-        if (res.getConfiguration().fontScale != 1) {//非默认值
-            Configuration newConfig = new Configuration();
-            newConfig.setToDefaults();//设置默认
-            res.updateConfiguration(newConfig, res.getDisplayMetrics());
-        }
-        return res;
     }
 
 }

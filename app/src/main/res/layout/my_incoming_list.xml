@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/llParentWhite">
+
+    <RelativeLayout
+        android:id="@+id/reMyincome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            style="@style/tvLabel"
+            android:drawableLeft="@drawable/wd_zuo_iconshouyi"
+            android:gravity="center_vertical"
+            android:text="我的收益" />
+
+        <ImageView style="@style/ivArrows" />
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.3dp"
+        android:layout_marginTop="15dp"
+        android:background="@color/gray" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/llToday"
+            style="@style/llCommon">
+
+            <TextView
+                android:id="@+id/todayEstimate"
+                style="@style/tvCommonMoney" />
+
+            <TextView
+                style="@style/tvCommonWenben"
+                android:text="今日预估(元)" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llYestday"
+            style="@style/llCommon">
+
+            <TextView
+                android:id="@+id/yestdayEstimate"
+                style="@style/tvCommonMoney" />
+
+            <TextView
+                style="@style/tvCommonWenben"
+                android:text="昨日预估(元)" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llThisMonth"
+            style="@style/llCommon">
+
+            <TextView
+                android:id="@+id/monthEstyimate"
+                style="@style/tvCommonMoney" />
+
+            <TextView
+                style="@style/tvCommonWenben"
+                android:text="本月预估(元)" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llLastMonth"
+            style="@style/llCommon">
+
+            <TextView
+                android:id="@+id/lastMonthEstyimate"
+                style="@style/tvCommonMoney" />
+
+            <TextView
+                style="@style/tvCommonWenben"
+                android:text="上月预估(元)" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

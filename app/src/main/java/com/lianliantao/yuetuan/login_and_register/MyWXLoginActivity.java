@@ -12,7 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import com.lianliantao.yuetuan.R;
-import com.lianliantao.yuetuan.base_activity.OriginalActivity;
+import com.lianliantao.yuetuan.base_activity.BigBaseOriginalActivity;
 import com.lianliantao.yuetuan.constant.CommonApi;
 import com.lianliantao.yuetuan.myutil.PhoneTopStyleUtil;
 import com.lianliantao.yuetuan.myutil.StatusBarUtils;
@@ -30,7 +30,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MyWXLoginActivity extends OriginalActivity {
+public class MyWXLoginActivity extends BigBaseOriginalActivity {
     @BindView(R.id.viewHeight)
     View viewHeight;
     @BindView(R.id.llBack)

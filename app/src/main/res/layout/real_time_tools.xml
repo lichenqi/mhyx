@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/llParentWhite">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            style="@style/tvLabel"
+            android:drawableLeft="@drawable/wd_zuo_iconshiyonggongju"
+            android:text="实时工具" />
+
+        <ImageView
+            style="@style/ivArrows"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.3dp"
+        android:layout_marginTop="15dp"
+        android:background="@color/gray" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/llDiTuiWuLiao"
+            style="@style/llCommon"
+            android:visibility="gone">
+
+            <ImageView
+                style="@style/ivCommonPersonal"
+                android:src="@drawable/wd_cent_dituiicon" />
+
+            <TextView
+                style="@style/tvOrder"
+                android:text="地推物料" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llShangXueYuan"
+            style="@style/llCommon">
+
+            <ImageView
+                style="@style/ivCommonPersonal"
+                android:src="@drawable/wd_cent_shangxueyuaniicon" />
+
+            <TextView
+                style="@style/tvOrder"
+                android:text="商学院" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llXinShouJiao"
+            style="@style/llCommon">
+
+            <ImageView
+                style="@style/ivCommonPersonal"
+                android:src="@drawable/wd_cent_xinshouicon" />
+
+            <TextView
+                style="@style/tvOrder"
+                android:text="新手教程" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>

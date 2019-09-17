@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/llMyOrder"
+    style="@style/llOrdeCommon">
+
+    <LinearLayout style="@style/llCommon">
+
+        <ImageView
+            style="@style/ivCommonPersonal"
+            android:src="@drawable/wd_cet_dingdanicon" />
+
+        <TextView
+            style="@style/tvOrder"
+            android:text="我的订单" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llTeamOrder"
+        style="@style/llCommon">
+
+        <ImageView
+            style="@style/ivCommonPersonal"
+            android:src="@drawable/wd_cet_tddingdanicon" />
+
+        <TextView
+            style="@style/tvOrder"
+            android:text="团队订单" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llMyteam"
+        style="@style/llCommon">
+
+        <ImageView
+            style="@style/ivCommonPersonal"
+            android:src="@drawable/wd_cet_wdtuanduiicon" />
+
+        <TextView
+            style="@style/tvOrder"
+            android:text="我的团队" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llIncoming"
+        style="@style/llCommon">
+
+        <ImageView
+            style="@style/ivCommonPersonal"
+            android:src="@drawable/wd_cet_srbaobiaoicon" />
+
+        <TextView
+            style="@style/tvOrder"
+            android:text="收入报表" />
+
+    </LinearLayout>
+
+</LinearLayout>

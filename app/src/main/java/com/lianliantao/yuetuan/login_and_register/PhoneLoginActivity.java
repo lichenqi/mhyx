@@ -17,7 +17,6 @@ import androidx.annotation.Nullable;
 
 import com.lianliantao.yuetuan.R;
 import com.lianliantao.yuetuan.app_manage.MyApplication;
-import com.lianliantao.yuetuan.base_activity.BaseTitleActivity;
 import com.lianliantao.yuetuan.bean.GetAuthCodeBean;
 import com.lianliantao.yuetuan.bean.LoginBean;
 import com.lianliantao.yuetuan.common_manager.AppUtils;
@@ -47,7 +46,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class PhoneLoginActivity extends BaseTitleActivity {
+public class PhoneLoginActivity extends BaseLoginActivity {
 
     @BindView(R.id.cell)
     ImageView cell;

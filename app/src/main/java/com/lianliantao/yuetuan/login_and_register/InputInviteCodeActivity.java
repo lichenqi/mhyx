@@ -18,7 +18,6 @@ import androidx.annotation.Nullable;
 import com.bumptech.glide.Glide;
 import com.lianliantao.yuetuan.R;
 import com.lianliantao.yuetuan.app_manage.MyApplication;
-import com.lianliantao.yuetuan.base_activity.BaseTitleActivity;
 import com.lianliantao.yuetuan.bean.CheckBean;
 import com.lianliantao.yuetuan.bean.LoginBean;
 import com.lianliantao.yuetuan.common_manager.AppUtils;
@@ -44,7 +43,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class InputInviteCodeActivity extends BaseTitleActivity {
+public class InputInviteCodeActivity extends BaseLoginActivity {
 
     @BindView(R.id.cell)
     ImageView cell;
