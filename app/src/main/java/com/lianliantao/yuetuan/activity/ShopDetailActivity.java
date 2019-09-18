@@ -663,7 +663,6 @@ public class ShopDetailActivity extends OriginalActivity {
                             }
                         } else {
                             ToastUtils.showToast(getApplicationContext(), CommonApi.ERROR_NET_MSG);
-
                         }
                     }
 
