@@ -2,6 +2,7 @@ package com.lianliantao.yuetuan.dianpu;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.webkit.WebChromeClient;
 import android.webkit.WebViewClient;
 
@@ -89,22 +90,34 @@ public class TianMaoActivityManager {
     /*淘宝备案*/
     private void taobaoBeiAn() {
         AlibcLogin alibcLogin = AlibcLogin.getInstance();
-        alibcLogin.showLogin(new AlibcLoginCallback() {
-            @Override
-            public void onSuccess(int i, String s, String s1) {
-                Session session = alibcLogin.getSession();
-                String nick = session.nick;/*淘宝昵称*/
-                String avatarUrl = session.avatarUrl;/*淘宝头像*/
-                Intent intent = new Intent(context, TaoBaoAuthActivity.class);
-                intent.putExtra("nick", nick);
-                intent.putExtra("avatarUrl", avatarUrl);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
-            }
+        Session session = alibcLogin.getSession();
+        String openId = session.openId;
+        if (TextUtils.isEmpty(openId)) {/*阿里百川未授权*/
+            alibcLogin.showLogin(new AlibcLoginCallback() {
+                @Override
+                public void onSuccess(int i, String s, String s1) {
+                    Session session = alibcLogin.getSession();
+                    String nick = session.nick;/*淘宝昵称*/
+                    String avatarUrl = session.avatarUrl;/*淘宝头像*/
+                    Intent intent = new Intent(context, TaoBaoAuthActivity.class);
+                    intent.putExtra("nick", nick);
+                    intent.putExtra("avatarUrl", avatarUrl);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
+                }
 
-            @Override
-            public void onFailure(int i, String s) {
-            }
-        });
+                @Override
+                public void onFailure(int i, String s) {
+                }
+            });
+        } else {
+            String nick = session.nick;/*淘宝昵称*/
+            String avatarUrl = session.avatarUrl;/*淘宝头像*/
+            Intent intent = new Intent(context, TaoBaoAuthActivity.class);
+            intent.putExtra("nick", nick);
+            intent.putExtra("avatarUrl", avatarUrl);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        }
     }
 }

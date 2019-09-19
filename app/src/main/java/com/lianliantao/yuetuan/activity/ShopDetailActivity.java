@@ -553,27 +553,39 @@ public class ShopDetailActivity extends OriginalActivity {
     }
 
     Dialog loadingDialog;
+    AlibcLogin alibcLogin;
+    Session session;
 
     /*淘宝渠道备案*/
     private void taobaoBeiAn(int requestCode) {
-        AlibcLogin alibcLogin = AlibcLogin.getInstance();
-        alibcLogin.showLogin(new AlibcLoginCallback() {
-            @Override
-            public void onSuccess(int i, String s, String s1) {
-                Session session = alibcLogin.getSession();
-                String nick = session.nick;/*淘宝昵称*/
-                String avatarUrl = session.avatarUrl;/*淘宝头像*/
-                intent = new Intent(getApplicationContext(), TaoBaoAuthActivity.class);
-                intent.putExtra("nick", nick);
-                intent.putExtra("avatarUrl", avatarUrl);
-                startActivityForResult(intent, requestCode);
-            }
+        alibcLogin = AlibcLogin.getInstance();
+        session = alibcLogin.getSession();
+        String openId = session.openId;
+        if (TextUtils.isEmpty(openId)) {/*阿里百川未授权*/
+            alibcLogin.showLogin(new AlibcLoginCallback() {
+                @Override
+                public void onSuccess(int i, String s, String s1) {
+                    session = alibcLogin.getSession();
+                    String nick = session.nick;/*淘宝昵称*/
+                    String avatarUrl = session.avatarUrl;/*淘宝头像*/
+                    intent = new Intent(getApplicationContext(), TaoBaoAuthActivity.class);
+                    intent.putExtra("nick", nick);
+                    intent.putExtra("avatarUrl", avatarUrl);
+                    startActivityForResult(intent, requestCode);
+                }
 
-            @Override
-            public void onFailure(int i, String s) {
-                DialogUtil.closeDialog(loadingDialog, ShopDetailActivity.this);
-            }
-        });
+                @Override
+                public void onFailure(int i, String s) {
+                }
+            });
+        } else {
+            String nick = session.nick;/*淘宝昵称*/
+            String avatarUrl = session.avatarUrl;/*淘宝头像*/
+            intent = new Intent(getApplicationContext(), TaoBaoAuthActivity.class);
+            intent.putExtra("nick", nick);
+            intent.putExtra("avatarUrl", avatarUrl);
+            startActivityForResult(intent, requestCode);
+        }
     }
 
     NiceDialog alipay_gif_dialog;

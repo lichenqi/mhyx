@@ -278,22 +278,33 @@ public class OneYuanBuyActivity extends OriginalActivity {
                     public void onClick(View v) {
                         taobaoAuthDialog.dismiss();
                         AlibcLogin alibcLogin = AlibcLogin.getInstance();
-                        alibcLogin.showLogin(new AlibcLoginCallback() {
-                            @Override
-                            public void onSuccess(int i, String s, String s1) {
-                                Session session = alibcLogin.getSession();
-                                String nick = session.nick;/*淘宝昵称*/
-                                String avatarUrl = session.avatarUrl;/*淘宝头像*/
-                                Intent intent = new Intent(getApplicationContext(), TaoBaoAuthActivity.class);
-                                intent.putExtra("nick", nick);
-                                intent.putExtra("avatarUrl", avatarUrl);
-                                startActivityForResult(intent, 100);
-                            }
+                        Session session = alibcLogin.getSession();
+                        String openId = session.openId;
+                        if (TextUtils.isEmpty(openId)) {/*阿里百川未授权*/
+                            alibcLogin.showLogin(new AlibcLoginCallback() {
+                                @Override
+                                public void onSuccess(int i, String s, String s1) {
+                                    Session session = alibcLogin.getSession();
+                                    String nick = session.nick;/*淘宝昵称*/
+                                    String avatarUrl = session.avatarUrl;/*淘宝头像*/
+                                    Intent intent = new Intent(getApplicationContext(), TaoBaoAuthActivity.class);
+                                    intent.putExtra("nick", nick);
+                                    intent.putExtra("avatarUrl", avatarUrl);
+                                    startActivityForResult(intent, 100);
+                                }
 
-                            @Override
-                            public void onFailure(int i, String s) {
-                            }
-                        });
+                                @Override
+                                public void onFailure(int i, String s) {
+                                }
+                            });
+                        } else {
+                            String nick = session.nick;/*淘宝昵称*/
+                            String avatarUrl = session.avatarUrl;/*淘宝头像*/
+                            Intent intent = new Intent(getApplicationContext(), TaoBaoAuthActivity.class);
+                            intent.putExtra("nick", nick);
+                            intent.putExtra("avatarUrl", avatarUrl);
+                            startActivityForResult(intent, 100);
+                        }
                     }
                 });
             }

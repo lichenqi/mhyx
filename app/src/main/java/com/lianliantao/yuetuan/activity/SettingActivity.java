@@ -371,7 +371,7 @@ public class SettingActivity extends BaseTitleActivity {
     private void taobaoLogin() {
         session = alibcLogin.getSession();
         String openId = session.openId;
-        if (TextUtils.isEmpty(openId)) {/*淘宝授权未登录*/
+        if (TextUtils.isEmpty(openId)) {/*阿里百川未授权*/
             alibcLogin.showLogin(new AlibcLoginCallback() {
                 @Override
                 public void onSuccess(int i, String s, String s1) {
