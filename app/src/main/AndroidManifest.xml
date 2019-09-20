@@ -209,6 +209,9 @@
         <activity
             android:name=".myjpush.TestActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".kotlin_activity.TablayoutTestActivity"
+            android:screenOrientation="portrait" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

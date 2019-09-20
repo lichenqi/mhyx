@@ -333,12 +333,11 @@
                     android:textColor="@color/txblack"
                     android:textSize="12sp" />
 
-                <com.lianliantao.yuetuan.custom_view.ScrollingDigitalAnimation
+                <com.lianliantao.yuetuan.custom_view.ScrollingDigitialAnimationSecond
                     android:id="@+id/dnView"
-                    android:layout_width="wrap_content"
+                    android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="2dp"
-                    android:layout_marginRight="2dp"
+                    android:gravity="center"
                     android:textColor="@color/colorPrimary"
                     android:textStyle="bold"
                     app:textSize="14sp" />

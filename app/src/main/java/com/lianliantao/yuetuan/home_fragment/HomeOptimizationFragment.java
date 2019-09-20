@@ -1,10 +1,13 @@
 package com.lianliantao.yuetuan.home_fragment;
 
 import android.animation.ArgbEvaluator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +38,7 @@ import com.lianliantao.yuetuan.bean.SearchListBean;
 import com.lianliantao.yuetuan.common_manager.CommonParamUtil;
 import com.lianliantao.yuetuan.constant.CommonApi;
 import com.lianliantao.yuetuan.custom_view.MyBannerRoundImageView;
-import com.lianliantao.yuetuan.custom_view.ScrollingDigitalAnimation;
+import com.lianliantao.yuetuan.custom_view.ScrollingDigitialAnimationSecond;
 import com.lianliantao.yuetuan.itemdecoration.CarItemDecoration;
 import com.lianliantao.yuetuan.lazy_base_fragment.LazyBaseFragment;
 import com.lianliantao.yuetuan.login_and_register.MyWXLoginActivity;
@@ -63,6 +66,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -87,6 +92,32 @@ public class HomeOptimizationFragment extends LazyBaseFragment implements ViewPa
     private RecyclerView recyclerview;
     private LinearLayout llParent;
     private AppBarLayout appbarlayout;
+    private Timer timer = new Timer();
+    private int money;/*为用户省钱*/
+
+    /*设置间隔时间*/
+    private void setTimer() {
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Message message = new Message();
+                message.what = 0;
+                handler.sendMessage(message);
+            }
+        }, 5000, 5000);
+    }
+
+    @SuppressLint("HandlerLeak")
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == 0) {
+                int v = (int) (Math.random() * 100);
+                money = v + money;
+                dnView.setNumberString(String.valueOf(money));
+            }
+        }
+    };
 
     /*用户可见和不可见方法设置*/
     @Override
@@ -129,6 +160,7 @@ public class HomeOptimizationFragment extends LazyBaseFragment implements ViewPa
         initRecyclerview();
         getHeadData();/*获取头部商品数据*/
         getSaveMoneyData();/*省钱数据*/
+        setTimer();/*设置定时器*/
     }
 
     private void getSaveMoneyData() {
@@ -142,8 +174,15 @@ public class HomeOptimizationFragment extends LazyBaseFragment implements ViewPa
                         CheaperBean bean = GsonUtil.GsonToBean(response.toString(), CheaperBean.class);
                         if (bean.getErrno() == CommonApi.RESULTCODEOK) {
                             String cheaper = bean.getCheaper();
+                            int v = (int) (Math.random() * 100);
+                            money = Integer.parseInt(cheaper) * v;
+                            int saveUserMoney = PreferUtils.getInt(context, "saveUserMoney", 0);
                             /*数字跳动*/
-                            dnView.setNumberString(cheaper);
+                            if (saveUserMoney > 0) {
+                                dnView.setNumberString(String.valueOf(saveUserMoney + 123));
+                            } else {
+                                dnView.setNumberString(String.valueOf(money));
+                            }
                         }
                     }
 
@@ -225,7 +264,7 @@ public class HomeOptimizationFragment extends LazyBaseFragment implements ViewPa
     }
 
     Banner banner;
-    ScrollingDigitalAnimation dnView;
+    ScrollingDigitialAnimationSecond dnView;
     View viewColor, zhongjianLine;
     ImageView todayFreeTwo, todayFreeThree, todayFreeFour, todayFreeOne, oneyuangou, yaoqinghaoyou;
     LinearLayout llLeft, llOneYuan, llYao;
@@ -493,5 +532,14 @@ public class HomeOptimizationFragment extends LazyBaseFragment implements ViewPa
     public void onAttach(Context context) {
         super.onAttach(context);
         activity = getActivity();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (timer != null) {
+            timer.cancel();
+        }
+        PreferUtils.putInt(context, "saveUserMoney", money);
     }
 }
