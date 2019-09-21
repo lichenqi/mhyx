@@ -76,11 +76,11 @@ import com.lianliantao.yuetuan.util.MoneyFormatUtil;
 import com.lianliantao.yuetuan.util.NumUtil;
 import com.lianliantao.yuetuan.util.StatusBarUtils;
 import com.lianliantao.yuetuan.util.ToastUtils;
-import com.lianliantao.yuetuan.view.RoundBannerLoader;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.youth.banner.Banner;
 import com.youth.banner.BannerConfig;
 import com.youth.banner.listener.OnBannerListener;
+import com.youth.banner.loader.ImageLoader;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -841,7 +841,12 @@ public class ShopDetailActivity extends OriginalActivity {
                 bannerList.add(bannerImages[i]);
             }
         }
-        banner.setImageLoader(new RoundBannerLoader());
+        banner.setImageLoader(new ImageLoader() {
+            @Override
+            public void displayImage(Context context, Object path, ImageView imageView) {
+                Glide.with(getApplicationContext()).load(String.valueOf(path)).into(imageView);
+            }
+        });
         banner.setImages(bannerList);
         banner.isAutoPlay(true);
         banner.setDelayTime(5000);
