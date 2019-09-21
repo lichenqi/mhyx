@@ -38,6 +38,7 @@ import com.lianliantao.yuetuan.myutil.PhoneTopStyleUtil;
 import com.lianliantao.yuetuan.util.GsonUtil;
 import com.lianliantao.yuetuan.util.PreferUtils;
 import com.lianliantao.yuetuan.util.SpUtil;
+import com.lianliantao.yuetuan.util.ToastUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -144,58 +145,66 @@ public class HomeFragment extends Fragment {
 
     private void initView() {
         cateInfoList = SpUtil.getList(context, CommonApi.TITLE_DATA_LIST);
-        if (cateInfoList.size() > 0) {
-            fragments = new ArrayList<>();
-            HomeOptimizationFragment homeOptimizationFragment = new HomeOptimizationFragment(llParent, appbarlayout);
-            bundle = new Bundle();
-            bundle.putString("id", cateInfoList.get(0).getId());
-            homeOptimizationFragment.setArguments(bundle);
-            fragments.add(homeOptimizationFragment);
-            for (int i = 1; i < cateInfoList.size(); i++) {
-                HomeOtherFragment otherFragment = new HomeOtherFragment();
-                bundle = new Bundle();
-                bundle.putString("id", cateInfoList.get(i).getId());
-                otherFragment.setArguments(bundle);
-                fragments.add(otherFragment);
-            }
-            adapter = new TabLayoutAdapter(fragments, getChildFragmentManager());
-            viewpager.setAdapter(adapter);
-            tablayout.setupWithViewPager(viewpager);
-            viewpager.setCurrentItem(0);
-            viewpager.setOffscreenPageLimit(fragments.size());
-            viewpager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                @Override
-                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                }
+        if (cateInfoList != null) {
+            initBaseViewData();
+        } else {
+            /*获取头部标题数据*/
+            getHeadTitleData();
+        }
+    }
 
-                @Override
-                public void onPageSelected(int position) {
-                    if (position == 0) {
-                        int colorChange = PreferUtils.getInt(context, "colorChange", 0);
-                        int recyclerviewHeight = PreferUtils.getInt(context, "recyclerviewHeight", 0);
-                        if (recyclerviewHeight == 0) {
-                            if (colorChange == 0) {
-                                llParent.setBackgroundColor(0xfffa6025);
-                                appbarlayout.setBackgroundColor(0xfffa6025);
-                            } else {
-                                llParent.setBackgroundColor(colorChange);
-                                appbarlayout.setBackgroundColor(colorChange);
-                            }
-                        } else if (recyclerviewHeight == 1300) {
+    /*初始计首页基本数据*/
+    private void initBaseViewData() {
+        fragments = new ArrayList<>();
+        HomeOptimizationFragment homeOptimizationFragment = new HomeOptimizationFragment(llParent, appbarlayout);
+        bundle = new Bundle();
+        bundle.putString("id", cateInfoList.get(0).getId());
+        homeOptimizationFragment.setArguments(bundle);
+        fragments.add(homeOptimizationFragment);
+        for (int i = 1; i < cateInfoList.size(); i++) {
+            HomeOtherFragment otherFragment = new HomeOtherFragment();
+            bundle = new Bundle();
+            bundle.putString("id", cateInfoList.get(i).getId());
+            otherFragment.setArguments(bundle);
+            fragments.add(otherFragment);
+        }
+        adapter = new TabLayoutAdapter(fragments, getChildFragmentManager());
+        viewpager.setAdapter(adapter);
+        tablayout.setupWithViewPager(viewpager);
+        viewpager.setCurrentItem(0);
+        viewpager.setOffscreenPageLimit(fragments.size());
+        viewpager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (position == 0) {
+                    int colorChange = PreferUtils.getInt(context, "colorChange", 0);
+                    int recyclerviewHeight = PreferUtils.getInt(context, "recyclerviewHeight", 0);
+                    if (recyclerviewHeight == 0) {
+                        if (colorChange == 0) {
                             llParent.setBackgroundColor(0xfffa6025);
                             appbarlayout.setBackgroundColor(0xfffa6025);
+                        } else {
+                            llParent.setBackgroundColor(colorChange);
+                            appbarlayout.setBackgroundColor(colorChange);
                         }
-                    } else {
+                    } else if (recyclerviewHeight == 1300) {
                         llParent.setBackgroundColor(0xfffa6025);
                         appbarlayout.setBackgroundColor(0xfffa6025);
                     }
+                } else {
+                    llParent.setBackgroundColor(0xfffa6025);
+                    appbarlayout.setBackgroundColor(0xfffa6025);
                 }
+            }
 
-                @Override
-                public void onPageScrollStateChanged(int state) {
-                }
-            });
-        }
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
     }
 
     private class TabLayoutAdapter extends FragmentPagerAdapter {
@@ -250,6 +259,34 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onFailure(int statusCode, String error_msg) {
                         ivMsg.setImageResource(R.mipmap.appmsg_red);
+                    }
+                });
+    }
+
+    /*获取头部标题数据*/
+    private void getHeadTitleData() {
+        MyApplication.getInstance().getMyOkHttp().post()
+                .url(CommonApi.BASEURL + CommonApi.HOME_DATA + CommonParamUtil.getCommonParamSign(context))
+                .enqueue(new JsonResponseHandler() {
+
+                    @Override
+                    public void onSuccess(int statusCode, JSONObject response) {
+                        super.onSuccess(statusCode, response);
+                        Log.i("指示器数据", response.toString());
+                        BaseTitleBean bean = GsonUtil.GsonToBean(response.toString(), BaseTitleBean.class);
+                        if (bean.getErrno() == CommonApi.RESULTCODEOK) {
+                            cateInfoList = bean.getCateInfo();
+                            if (cateInfoList == null) return;
+                            if (cateInfoList.size() > 0) {
+                                SpUtil.putList(context, CommonApi.TITLE_DATA_LIST, cateInfoList);
+                                initBaseViewData();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, String error_msg) {
+                        ToastUtils.showToast(context, CommonApi.ERROR_NET_MSG);
                     }
                 });
     }

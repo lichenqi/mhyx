@@ -3,64 +3,20 @@ package com.lianliantao.yuetuan.bean;
 import java.io.Serializable;
 import java.util.List;
 
-public class BaseTitleBean {
+public class BaseTitleBean extends BaseBean {
 
-    /**
-     * bannerInfo : [{"logo":"http://47.110.14.213:82/static/bg_banner_laxinhuodong.png","type":"1","url":""}]
-     * cateInfo : [{"cateName":"居家","id":"2"},{"cateName":"美食","id":"3"},{"cateName":"母婴","id":"4"},{"cateName":"美妆","id":"5"},{"cateName":"女装","id":"6"},{"cateName":"数码","id":"7"},{"cateName":"车品","id":"8"},{"cateName":"内衣","id":"9"},{"cateName":"家装","id":"10"},{"cateName":"鞋品","id":"11"},{"cateName":"男装","id":"12"},{"cateName":"配饰","id":"13"},{"cateName":"户外","id":"14"},{"cateName":"箱包","id":"15"}]
-     * cheaper : 100
-     * errmsg : success
-     * errno : 200
-     * hasNotice : true
-     * usermsg : success
-     */
 
-    private String cheaper;
-    private String errmsg;
-    private int errno;
-    private String hasNotice;
-    private String usermsg;
+    private List<ActivityInfoBean> activityInfo;
     private List<BannerInfoBean> bannerInfo;
     private List<CateInfoBean> cateInfo;
+    private List<MenuInfoBean> menuInfo;
 
-    public String getCheaper() {
-        return cheaper;
+    public List<ActivityInfoBean> getActivityInfo() {
+        return activityInfo;
     }
 
-    public void setCheaper(String cheaper) {
-        this.cheaper = cheaper;
-    }
-
-    public String getErrmsg() {
-        return errmsg;
-    }
-
-    public void setErrmsg(String errmsg) {
-        this.errmsg = errmsg;
-    }
-
-    public int getErrno() {
-        return errno;
-    }
-
-    public void setErrno(int errno) {
-        this.errno = errno;
-    }
-
-    public String getHasNotice() {
-        return hasNotice;
-    }
-
-    public void setHasNotice(String hasNotice) {
-        this.hasNotice = hasNotice;
-    }
-
-    public String getUsermsg() {
-        return usermsg;
-    }
-
-    public void setUsermsg(String usermsg) {
-        this.usermsg = usermsg;
+    public void setActivityInfo(List<ActivityInfoBean> activityInfo) {
+        this.activityInfo = activityInfo;
     }
 
     public List<BannerInfoBean> getBannerInfo() {
@@ -79,16 +35,38 @@ public class BaseTitleBean {
         this.cateInfo = cateInfo;
     }
 
-    public static class BannerInfoBean {
+    public List<MenuInfoBean> getMenuInfo() {
+        return menuInfo;
+    }
+
+    public void setMenuInfo(List<MenuInfoBean> menuInfo) {
+        this.menuInfo = menuInfo;
+    }
+
+    public static class ActivityInfoBean {
         /**
-         * logo : http://47.110.14.213:82/static/bg_banner_laxinhuodong.png
-         * type : 1
-         * url :
+         * description : 新人0元返利购
+         * logo : http://47.110.14.213:82/static/images/chanpin.png,http://47.110.14.213:82/static/images/chanpinkouhong.png,http://47.110.14.213:82/static/images/chanpinmianmo.png,http://47.110.14.213:82/static/images/chanpinshuang.png
+         * redirectType :
+         * title : 今日免单
+         * type : native
+         * url : jinrimiandan
          */
 
+        private String description;
         private String logo;
+        private String redirectType;
+        private String title;
         private String type;
         private String url;
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
 
         public String getLogo() {
             return logo;
@@ -96,6 +74,88 @@ public class BaseTitleBean {
 
         public void setLogo(String logo) {
             this.logo = logo;
+        }
+
+        public String getRedirectType() {
+            return redirectType;
+        }
+
+        public void setRedirectType(String redirectType) {
+            this.redirectType = redirectType;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
+    }
+
+    public static class BannerInfoBean {
+        /**
+         * color : #FA8C0F
+         * logo : http://47.110.14.213:82/static/images/bg_banner_chudanpaihang.png
+         * redirectType :
+         * title : 出单排行榜
+         * type : native
+         * url : chudan
+         */
+
+        private String color;
+        private String logo;
+        private String redirectType;
+        private String title;
+        private String type;
+        private String url;
+
+        public String getColor() {
+            return color;
+        }
+
+        public void setColor(String color) {
+            this.color = color;
+        }
+
+        public String getLogo() {
+            return logo;
+        }
+
+        public void setLogo(String logo) {
+            this.logo = logo;
+        }
+
+        public String getRedirectType() {
+            return redirectType;
+        }
+
+        public void setRedirectType(String redirectType) {
+            this.redirectType = redirectType;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
         }
 
         public String getType() {
@@ -117,8 +177,8 @@ public class BaseTitleBean {
 
     public static class CateInfoBean implements Serializable {
         /**
-         * cateName : 居家
-         * id : 2
+         * cateName : 优选
+         * id : 0
          */
 
         private String cateName;
@@ -138,6 +198,72 @@ public class BaseTitleBean {
 
         public void setId(String id) {
             this.id = id;
+        }
+    }
+
+    public static class MenuInfoBean {
+        /**
+         * description : 最高返佣90%
+         * logo : http://47.110.14.213:82/static/images/sy_cet_icontaobao.png
+         * redirectType :
+         * title : 淘宝
+         * type : native
+         * url : taobao
+         */
+
+        private String description;
+        private String logo;
+        private String redirectType;
+        private String title;
+        private String type;
+        private String url;
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public String getLogo() {
+            return logo;
+        }
+
+        public void setLogo(String logo) {
+            this.logo = logo;
+        }
+
+        public String getRedirectType() {
+            return redirectType;
+        }
+
+        public void setRedirectType(String redirectType) {
+            this.redirectType = redirectType;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
         }
     }
 }

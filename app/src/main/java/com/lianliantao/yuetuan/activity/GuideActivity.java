@@ -153,12 +153,13 @@ public class GuideActivity extends AppCompatActivity {
                     public void onSuccess(int statusCode, JSONObject response) {
                         super.onSuccess(statusCode, response);
                         Log.i("指示器数据", response.toString());
-                        BaseTitleBean titleBean = GsonUtil.GsonToBean(response.toString(), BaseTitleBean.class);
-                        if (titleBean == null) return;
-                        List<BaseTitleBean.CateInfoBean> cateInfo = titleBean.getCateInfo();
-                        if (cateInfo == null) return;
-                        if (cateInfo.size() > 0) {
-                            SpUtil.putList(getApplicationContext(), CommonApi.TITLE_DATA_LIST, cateInfo);
+                        BaseTitleBean bean = GsonUtil.GsonToBean(response.toString(), BaseTitleBean.class);
+                        if (bean.getErrno() == CommonApi.RESULTCODEOK) {
+                            List<BaseTitleBean.CateInfoBean> cateInfo = bean.getCateInfo();
+                            if (cateInfo == null) return;
+                            if (cateInfo.size() > 0) {
+                                SpUtil.putList(getApplicationContext(), CommonApi.TITLE_DATA_LIST, cateInfo);
+                            }
                         }
                     }
 
