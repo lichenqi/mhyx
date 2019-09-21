@@ -2,6 +2,7 @@ package com.lianliantao.yuetuan.home_fragment;
 
 import android.animation.ArgbEvaluator;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -14,7 +15,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -526,12 +526,12 @@ public class HomeOptimizationFragment extends LazyBaseFragment implements ViewPa
     public void onPageScrollStateChanged(int state) {
     }
 
-    FragmentActivity activity;
+    Activity activity;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        activity = getActivity();
+        activity = (Activity) context;
     }
 
     @Override
@@ -540,6 +540,8 @@ public class HomeOptimizationFragment extends LazyBaseFragment implements ViewPa
         if (timer != null) {
             timer.cancel();
         }
-        PreferUtils.putInt(context, "saveUserMoney", money);
+        if (context != null) {
+            PreferUtils.putInt(context, "saveUserMoney", money);
+        }
     }
 }

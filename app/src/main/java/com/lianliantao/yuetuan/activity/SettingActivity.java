@@ -34,6 +34,7 @@ import com.lianliantao.yuetuan.mine_activity.VersionUpgradeManager;
 import com.lianliantao.yuetuan.myokhttputils.response.JsonResponseHandler;
 import com.lianliantao.yuetuan.util.DataCleanManager;
 import com.lianliantao.yuetuan.util.GsonUtil;
+import com.lianliantao.yuetuan.util.NetUtil;
 import com.lianliantao.yuetuan.util.PreferUtils;
 import com.lianliantao.yuetuan.util.ToastUtils;
 import com.lianliantao.yuetuan.util.VersionUtil;
@@ -90,10 +91,10 @@ public class SettingActivity extends BaseTitleActivity {
     String authUrl;/*用户头像*/
     Intent intent;
     private String mobile;
-    private String orderPrivacy;
-    private String orderIncomeNotice;
-    private String shareAppDownload;
-    private String hasBindTbkdata;
+    private String orderPrivacy = "";
+    private String orderIncomeNotice = "";
+    private String shareAppDownload = "";
+    private String hasBindTbkdata = "";
 
     // 声明一个订阅方法，用于接收事件
     @Subscribe
@@ -157,6 +158,7 @@ public class SettingActivity extends BaseTitleActivity {
 
                     @Override
                     public void onFailure(int statusCode, String error_msg) {
+                        ToastUtils.showToast(getApplicationContext(), CommonApi.ERROR_NET_MSG);
                     }
                 });
     }
@@ -236,6 +238,10 @@ public class SettingActivity extends BaseTitleActivity {
                 showLoginOutDialog();
                 break;
             case R.id.reTaobaoQudao:/*淘宝渠道认证*/
+                if (NetUtil.getNetWorkState(SettingActivity.this) < 0) {
+                    ToastUtils.showToast(getApplicationContext(), "您的网络异常，请联网重试");
+                    return;
+                }
                 if (hasBindTbkdata.equals("true")) {
                     session = alibcLogin.getSession();
                     String openId = session.openId;
@@ -254,7 +260,6 @@ public class SettingActivity extends BaseTitleActivity {
 
                             @Override
                             public void onFailure(int i, String s) {
-
                             }
                         });
                     } else {
@@ -282,6 +287,10 @@ public class SettingActivity extends BaseTitleActivity {
                 tvCache.setText(DataCleanManager.getTotalCacheSize(getApplicationContext()));
                 break;
             case R.id.switch_one:
+                if (NetUtil.getNetWorkState(SettingActivity.this) < 0) {
+                    ToastUtils.showToast(getApplicationContext(), "您的网络异常，请联网重试");
+                    return;
+                }
                 if (shareAppDownload.equals("1")) {
                     setButtonData("shareAppDownload", "2");
                 } else {
@@ -289,6 +298,10 @@ public class SettingActivity extends BaseTitleActivity {
                 }
                 break;
             case R.id.switch_two:
+                if (NetUtil.getNetWorkState(SettingActivity.this) < 0) {
+                    ToastUtils.showToast(getApplicationContext(), "您的网络异常，请联网重试");
+                    return;
+                }
                 if (orderIncomeNotice.equals("1")) {
                     setButtonData("orderIncomeNotice", "2");
                 } else {
@@ -296,6 +309,10 @@ public class SettingActivity extends BaseTitleActivity {
                 }
                 break;
             case R.id.switch_three:
+                if (NetUtil.getNetWorkState(SettingActivity.this) < 0) {
+                    ToastUtils.showToast(getApplicationContext(), "您的网络异常，请联网重试");
+                    return;
+                }
                 if (orderPrivacy.equals("1")) {
                     setButtonData("orderPrivacy", "2");
                 } else {
@@ -303,6 +320,10 @@ public class SettingActivity extends BaseTitleActivity {
                 }
                 break;
             case R.id.reVersion:/*点击更新版本接口*/
+                if (NetUtil.getNetWorkState(SettingActivity.this) < 0) {
+                    ToastUtils.showToast(getApplicationContext(), "您的网络异常，请联网重试");
+                    return;
+                }
                 VersionUpgradeManager manager = new VersionUpgradeManager(getApplicationContext(), this);
                 manager.set();
                 break;

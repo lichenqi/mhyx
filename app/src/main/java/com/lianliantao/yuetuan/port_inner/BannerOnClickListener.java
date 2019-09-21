@@ -1,9 +1,8 @@
 package com.lianliantao.yuetuan.port_inner;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-
-import androidx.fragment.app.FragmentActivity;
 
 import com.lianliantao.yuetuan.activity.MyBaseHtml5Activity;
 import com.lianliantao.yuetuan.bean.HomeHeadBean;
@@ -23,9 +22,9 @@ public class BannerOnClickListener implements OnBannerListener {
     private Context context;
     private List<HomeHeadBean.BannerInfoBean> bannerInfo;
     private Intent intent;
-    private FragmentActivity activity;
+    private Activity activity;
 
-    public BannerOnClickListener(Context context, List<HomeHeadBean.BannerInfoBean> bannerInfo, FragmentActivity activity) {
+    public BannerOnClickListener(Context context, List<HomeHeadBean.BannerInfoBean> bannerInfo, Activity activity) {
         this.context = context;
         this.bannerInfo = bannerInfo;
         this.activity = activity;

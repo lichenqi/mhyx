@@ -1,12 +1,11 @@
 package com.lianliantao.yuetuan.dianpu;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.webkit.WebChromeClient;
 import android.webkit.WebViewClient;
-
-import androidx.fragment.app.FragmentActivity;
 
 import com.ali.auth.third.core.model.Session;
 import com.alibaba.baichuan.android.trade.AlibcTrade;
@@ -33,9 +32,9 @@ public class CheckUserBeian2ShopManager {
 
     private String id;
     private Context context;
-    private FragmentActivity activity;
+    private Activity activity;
 
-    public CheckUserBeian2ShopManager(Context context, String id, FragmentActivity activity) {
+    public CheckUserBeian2ShopManager(Context context, String id, Activity activity) {
         this.context = context;
         this.id = id;
         this.activity = activity;

@@ -354,7 +354,7 @@
             android:layout_marginTop="40dp"
             android:layout_marginRight="20dp"
             android:layout_marginBottom="30dp"
-            android:background="@drawable/phone_login_bg"
+            android:background="@drawable/setting_loginout_bg"
             android:gravity="center"
             android:paddingTop="12dp"
             android:paddingBottom="12dp"

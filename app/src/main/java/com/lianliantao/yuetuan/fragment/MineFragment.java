@@ -1,5 +1,6 @@
 package com.lianliantao.yuetuan.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,7 +16,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -473,11 +473,11 @@ public class MineFragment extends Fragment {
                 });
     }
 
-    FragmentActivity activity;
+    Activity activity;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        activity = getActivity();
+        activity = (Activity) context;
     }
 }

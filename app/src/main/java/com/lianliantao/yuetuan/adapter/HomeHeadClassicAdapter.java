@@ -1,5 +1,6 @@
 package com.lianliantao.yuetuan.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -9,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -32,10 +32,10 @@ public class HomeHeadClassicAdapter extends RecyclerView.Adapter<HomeHeadClassic
 
     private Context context;
     private List<HomeHeadBean.MenuInfoBean> menuInfo;
-    private FragmentActivity activity;
+    private Activity activity;
     private Intent intent;
 
-    public HomeHeadClassicAdapter(Context context, List<HomeHeadBean.MenuInfoBean> menuInfo, FragmentActivity activity) {
+    public HomeHeadClassicAdapter(Context context, List<HomeHeadBean.MenuInfoBean> menuInfo, Activity activity) {
         this.menuInfo = menuInfo;
         this.context = context;
         this.activity = activity;
