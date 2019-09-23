@@ -138,6 +138,8 @@ dependencies {
     implementation 'cn.jiguang.sdk:jcore:2.1.2'
     /*约束布局*/
     implementation "androidx.constraintlayout:constraintlayout:1.1.3"
+    /*类似tablayout但是强于其效果 */
+    implementation'com.github.hackware1993:MagicIndicator:1.5.0'
 }
 /*集成分享*/
 MobSDK {

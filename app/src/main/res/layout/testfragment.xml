@@ -5,9 +5,9 @@
     android:orientation="vertical">
 
     <TextView
+        android:id="@+id/tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="李晨奇"
         android:textColor="@color/colorPrimary" />
 
 </LinearLayout>

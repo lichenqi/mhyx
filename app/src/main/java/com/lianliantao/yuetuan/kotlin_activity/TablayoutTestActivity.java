@@ -1,8 +1,9 @@
 package com.lianliantao.yuetuan.kotlin_activity;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -11,9 +12,17 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import com.google.android.material.tabs.TabLayout;
 import com.lianliantao.yuetuan.R;
 import com.lianliantao.yuetuan.base_activity.BaseTitleActivity;
+import com.lianliantao.yuetuan.util.DensityUtils;
+
+import net.lucode.hackware.magicindicator.MagicIndicator;
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.CommonNavigator;
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.CommonNavigatorAdapter;
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerIndicator;
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerTitleView;
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.indicators.LinePagerIndicator;
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.CommonPagerTitleView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +35,11 @@ public class TablayoutTestActivity extends BaseTitleActivity {
     private List<Fragment> fragments;
     private String[] titles = {"00:00", "09:00", "10:00", "12:00", "15:00", "17:00", "20:00", "00:00", "09:00", "10:00", "12:00", "15:00", "17:00", "20:00"};
     private String[] status = {"已开始", "已开始", "已开始", "已开始", "已开始", "已开始", "已开始", "已开始", "已开始", "已开始", "已开始", "已开始", "已开始", "已开始"};
-    private TabLayoutAdapter adapter;
-    @BindView(R.id.tablayout)
-    TabLayout tabLayout;
+    @BindView(R.id.magicindicator)
+    MagicIndicator magicindicator;
     @BindView(R.id.viewpager)
     ViewPager viewpager;
+    private int width;
 
     @Override
     public int getContainerView() {
@@ -42,47 +51,71 @@ public class TablayoutTestActivity extends BaseTitleActivity {
         super.onCreate(savedInstanceState);
         ButterKnife.bind(this);
         setMiddleTitle("限时抢购");
+        width = getResources().getDisplayMetrics().widthPixels * 2 / 5;
         initView();
     }
 
     private void initView() {
         fragments = new ArrayList<>();
         for (int i = 0; i < titles.length; i++) {
-            TestFragment orderFragment = new TestFragment();
-            fragments.add(orderFragment);
+            TestFragment testFragment = new TestFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("title", titles[i]);
+            testFragment.setArguments(bundle);
+            fragments.add(testFragment);
         }
-        adapter = new TabLayoutAdapter(fragments, getSupportFragmentManager());
-        viewpager.setAdapter(adapter);
-        tabLayout.setupWithViewPager(viewpager);
+        CommonNavigator commonNavigator = new CommonNavigator(getApplicationContext());
+        commonNavigator.setAdapter(new CommonNavigatorAdapter() {
+            @Override
+            public int getCount() {
+                return titles == null ? 0 : titles.length;
+            }
+
+            @Override
+            public IPagerTitleView getTitleView(Context context, int index) {
+                CommonPagerTitleView commonPagerTitleView = new CommonPagerTitleView(context);
+                commonPagerTitleView.setContentView(R.layout.item_custom_tablayout_view);
+                TextView time = commonPagerTitleView.findViewById(R.id.time);
+                TextView statu = commonPagerTitleView.findViewById(R.id.statu);
+                time.setText(titles[index]);
+                statu.setText(status[index]);
+                commonPagerTitleView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        viewpager.setCurrentItem(index);
+                    }
+                });
+                return commonPagerTitleView;
+            }
+
+            @Override
+            public IPagerIndicator getIndicator(Context context) {
+                LinePagerIndicator linePagerIndicator = new LinePagerIndicator(context);
+                linePagerIndicator.setColors(new Integer[]{Integer.valueOf(Color.parseColor("#fa6025"))});
+                linePagerIndicator.setLineHeight(DensityUtils.dip2px(getApplicationContext(), 46));
+                return linePagerIndicator;
+            }
+        });
+        commonNavigator.setLeftPadding(width);
+        commonNavigator.setRightPadding(width);
+        magicindicator.setNavigator(commonNavigator);
         viewpager.setCurrentItem(0);
-        viewpager.setOffscreenPageLimit(fragments.size());
-        for (int i = 0; i < adapter.getCount(); i++) {
-            TabLayout.Tab tabAt = tabLayout.getTabAt(i);
-            tabAt.setCustomView(R.layout.item_custom_tablayout_view);
-            View customView = tabAt.getCustomView();
-            TextView time = customView.findViewById(R.id.time);
-            TextView statu = customView.findViewById(R.id.statu);
-            LinearLayout llParent = customView.findViewById(R.id.llParent);
-            time.setText(titles[i]);
-            statu.setText(status[i]);
-            llParent.setBackgroundColor(0xff000000);
-            if (i == 0) {
-                llParent.setBackgroundColor(0xfffa6025);
-            }
-        }
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        TabLayoutAdapter adapter = new TabLayoutAdapter(fragments, getSupportFragmentManager());
+        viewpager.setAdapter(adapter);
+        viewpager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                tab.getCustomView().findViewById(R.id.llParent).setBackgroundColor(0xfffa6025);
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                magicindicator.onPageScrolled(position, positionOffset, positionOffsetPixels);
             }
 
             @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-                tab.getCustomView().findViewById(R.id.llParent).setBackgroundColor(0xff000000);
+            public void onPageSelected(int position) {
+                magicindicator.onPageSelected(position);
             }
 
             @Override
-            public void onTabReselected(TabLayout.Tab tab) {
+            public void onPageScrollStateChanged(int state) {
+                magicindicator.onPageScrollStateChanged(state);
             }
         });
     }

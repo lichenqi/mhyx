@@ -2,13 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/llParent"
     android:layout_width="wrap_content"
-    android:layout_height="50dp"
-    android:animateLayoutChanges="true"
-    android:background="@color/colorPrimary"
+    android:layout_height="46dp"
     android:gravity="center"
     android:orientation="vertical"
-    android:paddingLeft="8dp"
-    android:paddingRight="8dp">
+    android:paddingLeft="12dp"
+    android:paddingRight="12dp">
 
     <TextView
         android:id="@+id/time"
@@ -26,6 +24,6 @@
         android:layout_marginTop="2dp"
         android:text="已开抢"
         android:textColor="@color/white"
-        android:textSize="12sp" />
+        android:textSize="10sp" />
 
 </LinearLayout>
