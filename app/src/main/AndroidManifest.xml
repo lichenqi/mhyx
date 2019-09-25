@@ -212,6 +212,15 @@
         <activity
             android:name=".kotlin_activity.TablayoutTestActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".kotlin_activity.OpenPhonePhotosActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".kotlin_activity.ChildThreadSendMsg2MainThread"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".kotlin_activity.MainThreadSendMsg2ChildThread"
+            android:screenOrientation="portrait" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

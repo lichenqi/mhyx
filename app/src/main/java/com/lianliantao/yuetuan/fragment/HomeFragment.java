@@ -32,6 +32,8 @@ import com.lianliantao.yuetuan.common_manager.CommonParamUtil;
 import com.lianliantao.yuetuan.constant.CommonApi;
 import com.lianliantao.yuetuan.home_fragment.HomeOptimizationFragment;
 import com.lianliantao.yuetuan.home_fragment.HomeOtherFragment;
+import com.lianliantao.yuetuan.kotlin_activity.ChildThreadSendMsg2MainThread;
+import com.lianliantao.yuetuan.kotlin_activity.OpenPhonePhotosActivity;
 import com.lianliantao.yuetuan.login_and_register.MyWXLoginActivity;
 import com.lianliantao.yuetuan.myokhttputils.response.JsonResponseHandler;
 import com.lianliantao.yuetuan.myutil.PhoneTopStyleUtil;
@@ -134,7 +136,8 @@ public class HomeFragment extends Fragment {
                 break;
             case R.id.iv_msg:
                 if (PreferUtils.getBoolean(context, CommonApi.ISLOGIN)) {
-                    intent = new Intent(context, AppMsgActivity.class);
+//                    intent = new Intent(context, AppMsgActivity.class);
+                    intent = new Intent(context, ChildThreadSendMsg2MainThread.class);
                     startActivity(intent);
                 } else {
                     startActivity(new Intent(context, MyWXLoginActivity.class));
