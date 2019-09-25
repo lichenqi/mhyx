@@ -23,7 +23,6 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.tabs.TabLayout;
 import com.lianliantao.yuetuan.R;
-import com.lianliantao.yuetuan.activity.AppMsgActivity;
 import com.lianliantao.yuetuan.activity.SearchKeyWordActivity;
 import com.lianliantao.yuetuan.app_manage.MyApplication;
 import com.lianliantao.yuetuan.bean.AppMsgReadBean;
@@ -32,8 +31,8 @@ import com.lianliantao.yuetuan.common_manager.CommonParamUtil;
 import com.lianliantao.yuetuan.constant.CommonApi;
 import com.lianliantao.yuetuan.home_fragment.HomeOptimizationFragment;
 import com.lianliantao.yuetuan.home_fragment.HomeOtherFragment;
-import com.lianliantao.yuetuan.kotlin_activity.ChildThreadSendMsg2MainThread;
-import com.lianliantao.yuetuan.kotlin_activity.OpenPhonePhotosActivity;
+import com.lianliantao.yuetuan.kotlin_activity.MainThreadSendMsg2ChildThread;
+import com.lianliantao.yuetuan.kotlin_activity.TablayoutTestActivity;
 import com.lianliantao.yuetuan.login_and_register.MyWXLoginActivity;
 import com.lianliantao.yuetuan.myokhttputils.response.JsonResponseHandler;
 import com.lianliantao.yuetuan.myutil.PhoneTopStyleUtil;
@@ -137,7 +136,7 @@ public class HomeFragment extends Fragment {
             case R.id.iv_msg:
                 if (PreferUtils.getBoolean(context, CommonApi.ISLOGIN)) {
 //                    intent = new Intent(context, AppMsgActivity.class);
-                    intent = new Intent(context, ChildThreadSendMsg2MainThread.class);
+                    intent = new Intent(context, TablayoutTestActivity.class);
                     startActivity(intent);
                 } else {
                     startActivity(new Intent(context, MyWXLoginActivity.class));

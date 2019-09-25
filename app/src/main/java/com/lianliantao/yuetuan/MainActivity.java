@@ -2,6 +2,7 @@ package com.lianliantao.yuetuan;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -233,4 +234,13 @@ public class MainActivity extends OriginalActivity {
         return super.onKeyDown(keyCode, event);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
 }

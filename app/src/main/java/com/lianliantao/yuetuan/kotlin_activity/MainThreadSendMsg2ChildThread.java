@@ -10,6 +10,8 @@ import android.os.Message;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.lianliantao.yuetuan.util.ToastUtils;
+
 /*主线程发消息到子线程*/
 public class MainThreadSendMsg2ChildThread extends AppCompatActivity {
 
@@ -19,12 +21,13 @@ public class MainThreadSendMsg2ChildThread extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        HandlerThread handlerThread = new HandlerThread("magic");
-        handlerThread.start();
-        handler = new Handler(handlerThread.getLooper()) {
+        HandlerThread thread = new HandlerThread("handle");
+        thread.start();
+        handler = new Handler(thread.getLooper()) {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
+                ToastUtils.showToast(getApplicationContext(), "当前子线程是 " + Thread.currentThread());
             }
         };
         handler.sendEmptyMessage(0);
