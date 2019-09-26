@@ -8,14 +8,27 @@ import android.os.Message;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.lianliantao.yuetuan.R;
+import com.lianliantao.yuetuan.custom_view.SketchView;
 import com.lianliantao.yuetuan.util.ToastUtils;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /*子线程向主线程通讯*/
 public class ChildThreadSendMsg2MainThread extends AppCompatActivity {
 
+
+    @BindView(R.id.sketchView)
+    SketchView sketchView;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.childthreadsendmsg2mainthread);
+        ButterKnife.bind(this);
+        sketchView.startAnimation();
         /*开启一个子线程 */
         new Thread() {
             @Override
@@ -47,4 +60,7 @@ public class ChildThreadSendMsg2MainThread extends AppCompatActivity {
         }
     };
 
+    @OnClick(R.id.sketchView)
+    public void onViewClicked() {
+    }
 }

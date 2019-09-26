@@ -119,4 +119,15 @@
         <attr name="textPadding" format="dimension" />
     </declare-styleable>
 
+    <!--小球轨迹-->
+    <declare-styleable name="MyBallView">
+        <attr name="textballColor" format="color" />
+    </declare-styleable>
+
+    <!--圆形动画-->
+    <declare-styleable name="SketchView">
+        <attr name="SketchView_size" format="dimension" />
+        <attr name="SketchView_background_color" format="color" />
+    </declare-styleable>
+
 </resources>
