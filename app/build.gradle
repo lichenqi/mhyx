@@ -6,7 +6,7 @@ apply plugin: 'com.mob.sdk'
 android {
     signingConfigs {
         config {
-            storeFile file('F:\\mhyhapp_keystore_location\\mhyh_app.jks')
+            storeFile file('E:\\mhyhapp_keystore_location\\mhyh_app.jks')
             storePassword '123456'
             keyAlias = 'mahuayouxuan'
             keyPassword '123456'
