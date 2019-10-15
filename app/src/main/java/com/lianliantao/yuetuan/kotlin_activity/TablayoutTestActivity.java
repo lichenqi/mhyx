@@ -34,8 +34,8 @@ import butterknife.ButterKnife;
 public class TablayoutTestActivity extends BaseTitleActivity {
 
     private List<Fragment> fragments;
-    private String[] titles = {"00:00", "09:00", "10:00", "12:00", "15:00", "17:00", "20:00", "00:00", "09:00", "10:00", "12:00", "15:00", "17:00", "20:00"};
-    private String[] status = {"已开始", "已开始", "已开始", "已开始", "已开始", "已开始", "已开始", "已开始", "已开始", "已开始", "已开始", "已开始", "已开始", "已开始"};
+    private String[] titles = {"00:00", "09:00", "00:00", "00:00", "00:00", "00:00", "00:00", "00:00", "00:00", "00:00", "00:00"};
+    private String[] status = {"已开始", "已开始", "已开始", "已开始", "已开始", "已开始", "已开始", "已开始", "已开始", "已开始", "已开始"};
     @BindView(R.id.magicindicator)
     MagicIndicator magicindicator;
     @BindView(R.id.viewpager)
